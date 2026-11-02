@@ -1162,6 +1162,7 @@ Réponds UNIQUEMENT avec un objet JSON de cette forme :
 Règles : utilise exactement les noms de colonnes fournis ; 3 ou 4 kpis utiles ; n'invente aucune colonne.`;
 }
 /* AI access: inside Claude the viewer's own account (sample); on the hosted site a small relay at /api/design */
+const RELAY_URL = ""; /* adresse du relais Cloudflare Worker, ex. https://saimple-relais.xxx.workers.dev */
 const RELAY = !window.claude && /^https?:$/.test(location.protocol);
 function parseLooseJSON(t){ t=String(t||"").trim(); try{ return JSON.parse(t); }catch(e){}
   const m=t.match(/```(?:json)?\s*([\s\S]*?)```/); if(m){ try{ return JSON.parse(m[1]); }catch(e){} }
@@ -1175,7 +1176,7 @@ async function aiJSON(prompt, {img=null, signal, fresh=false}={}){
   if (!RELAY) throw {code:"sampling_disabled"};
   let image=null; if(img){ try{ image={type:"image/jpeg", data: await imageToB64(img)}; }catch(e){} }
   let r; const payload=JSON.stringify({prompt,image});
-  for (const url of ["api/design.php","/api/design"]){
+  for (const url of [RELAY_URL,"api/design.php","/api/design"].filter(Boolean)){
     try{ r = await fetch(url,{method:"POST",headers:{"content-type":"application/json"},body:payload,signal}); }
     catch(e){ if (e?.name==="AbortError") throw {code:"cancelled"}; r=null; continue; }
     if (r.status!==404 && r.status!==405) break;
