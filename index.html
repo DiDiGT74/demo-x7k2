@@ -1162,7 +1162,7 @@ Réponds UNIQUEMENT avec un objet JSON de cette forme :
 Règles : utilise exactement les noms de colonnes fournis ; 3 ou 4 kpis utiles ; n'invente aucune colonne.`;
 }
 /* AI access: inside Claude the viewer's own account (sample); on the hosted site a small relay at /api/design */
-const RELAY_URL = ""; /* adresse du relais Cloudflare Worker, ex. https://saimple-relais.xxx.workers.dev */
+const RELAY_URL = "https://saimple-relais.cyptoadriexx.workers.dev"; /* adresse du relais Cloudflare Worker, ex. https://saimple-relais.xxx.workers.dev */
 const RELAY = !window.claude && /^https?:$/.test(location.protocol);
 function parseLooseJSON(t){ t=String(t||"").trim(); try{ return JSON.parse(t); }catch(e){}
   const m=t.match(/```(?:json)?\s*([\s\S]*?)```/); if(m){ try{ return JSON.parse(m[1]); }catch(e){} }
