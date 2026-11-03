@@ -220,7 +220,7 @@ textarea{width:100%;min-height:90px;border:1px solid var(--line);border-radius:8
     <div class="role">
       <label for="role">Voir en tant que</label>
       <select id="role">
-        <option value="admin">Admin (porteur d'offre)</option>
+        <option value="admin">Admin</option>
         <option value="direction">Direction</option>
         <option value="commercial">Commercial</option>
         <option value="cdp">Chef de projet</option>
@@ -336,7 +336,7 @@ let S={
 const WK=Array.from({length:16},(_,i)=>{let n=45+i;if(n>53)n-=53;return 'S'+String(n).padStart(2,'0')});
 const WKD=Array.from({length:16},(_,i)=>{const d=new Date(Date.UTC(2026,10,2+7*i));return String(d.getUTCDate()).padStart(2,'0')+'.'+String(d.getUTCMonth()+1).padStart(2,'0')});
 const RES=[
- {id:'didi',n:'Didi',r:'Chef de projet · porteur d\'offre'},
+ {id:'didi',n:'Didi',r:'Chef de projet'},
  {id:'guillaume',n:'Guillaume G',r:'Chef de projet'},
  {id:'quentin',n:'Quentin C',r:'Chef de projet'},
  {id:'audrey',n:'Audrey B',r:'Chef de projet'},
