@@ -133,6 +133,41 @@ tr.click:hover td{background:var(--sunk)}
 .bar.l .pg{background:var(--lilas)}
 .ms{position:absolute;top:15px;width:12px;height:12px;transform:rotate(45deg);background:var(--warn)}
 .today{position:absolute;top:0;bottom:0;width:0;border-left:1.5px dashed var(--crit)}
+
+.filters{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+.filters select,.filters input[type=search]{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:7px 9px;color:var(--fg);font:inherit;font-size:13px}
+.filters label{display:flex;gap:6px;align-items:center;font-size:13px;color:var(--muted)}
+.gantt{min-width:900px}
+.wk{display:grid;grid-template-columns:repeat(16,1fr)}
+.wk span{border-left:1px solid var(--line);padding-left:4px;font-size:10.5px}
+.wk span.m{color:var(--fg)}
+.track{background:repeating-linear-gradient(90deg,transparent 0 calc(6.25% - 1px),var(--line) calc(6.25% - 1px) 6.25%)}
+.gr.click{cursor:pointer}
+.gr.click:hover{background:var(--sunk)}
+.due{position:absolute;top:8px;bottom:8px;width:0;border-left:2px solid var(--crit)}
+.bar.late{border-color:var(--crit)}
+.bar.tent{background:none;border-style:dashed;border-color:var(--faint)}
+.flag{font-size:11px;font-weight:700;color:var(--crit)}
+.alert{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--line);font-size:13px}
+.alert:last-child{border-bottom:0}
+.alert .ic{flex:none;width:22px;height:22px;border-radius:6px;display:grid;place-items:center;font-weight:800;font-size:12px}
+.alert .ic.c{background:var(--crit-soft);color:var(--crit)}
+.alert .ic.w{background:var(--warn-soft);color:var(--warn)}
+.bud{display:flex;flex-direction:column;gap:6px}
+.bud .t{position:relative;height:14px;border-radius:7px;background:var(--sunk);overflow:hidden}
+.bud .t i{position:absolute;inset:0 auto 0 0;border-radius:7px}
+.heat{border-collapse:separate;border-spacing:3px;min-width:900px}
+.heat th{border:0;padding:4px;text-align:center;font-size:10.5px}
+.heat th:first-child{text-align:left}
+.heat td{border:0;padding:0;text-align:center;font-size:11.5px;font-weight:700;height:34px;border-radius:6px;font-variant-numeric:tabular-nums}
+.heat td.nm{text-align:left;font-weight:600;font-size:13px;padding-right:10px;white-space:nowrap}
+.heat td.nm small{display:block;font-weight:500;color:var(--muted);font-size:11px}
+.heat td.c{cursor:pointer}
+.h0{background:var(--sunk);color:var(--faint)}
+.h1{background:var(--good-soft);color:var(--good)}
+.h2{background:var(--lagon-soft);color:var(--lagon)}
+.h3{background:var(--crit-soft);color:var(--crit);outline:1.5px solid var(--crit)}
+.heat td.c:hover{filter:brightness(.95)}
 /* bars chart */
 .bars{display:flex;align-items:flex-end;gap:10px;height:160px;padding-top:10px;border-bottom:1px solid var(--line)}
 .bars div{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px;height:100%}
@@ -142,6 +177,7 @@ tr.click:hover td{background:var(--sunk)}
 .bl{display:flex;gap:10px;font-size:11px;color:var(--muted);margin-top:6px}
 .bl span{display:flex;gap:6px;align-items:center}
 .bl i{width:10px;height:10px;border-radius:3px;display:inline-block}
+.bl i.h1,.bl i.h2,.bl i.h3{width:14px;height:14px}
 /* marketing */
 .post{border:1px solid var(--line);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:10px;background:var(--surface)}
 .post p{margin:0;white-space:pre-line;font-size:13.5px}
@@ -206,6 +242,7 @@ const I={
  fin:'<path d="M4 7h16v10H4z M12 9.5a2.5 2.5 0 100 5 2.5 2.5 0 000-5"/>',
  mkt:'<path d="M4 10v4l12 5V5z M16 9a3 3 0 010 6 M7 14l1 5"/>',
  ppm:'<path d="M4 6h9 M7 12h10 M10 18h10"/>',
+ res:'<path d="M9 11a3 3 0 100-6 3 3 0 000 6z M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6 M16 5a3 3 0 010 6 M18 14c2 .7 3 2.8 3 6"/>',
  kpi:'<path d="M4 19V9 M10 19V5 M16 19v-7 M22 19H2"/>'
 };
 const MODS=[
@@ -216,13 +253,14 @@ const MODS=[
  {id:'finance',n:'Finance',ic:'fin',r:['admin','direction','commercial','cdp']},
  {id:'marketing',n:'Marketing',ic:'mkt',r:['admin','direction','commercial','cdp']},
  {id:'projets',n:'Projets',ic:'ppm',r:['admin','direction','cdp','dev']},
+ {id:'ressources',n:'Ressources',ic:'res',r:['admin','direction','cdp','dev']},
  {id:'indicateurs',n:'Indicateurs',ic:'kpi',r:['admin','direction','commercial','cdp']}
 ];
 const STAGES=['Nouvelle demande','Prospect qualifié','Atelier réservé','Atelier réalisé','Devis envoyé','Signé'];
 const chf=n=>"CHF "+n.toLocaleString('fr-CH').replace(/ |\s/g,"'");
 
 let S={
- role:'admin',
+ role:'admin',pf:{st:'',cp:'',q:'',al:false},rf:'',
  demandes:[
   {id:'D-0142',ent:'Menuiserie Favre SA',ct:'Julien Favre',act:'Menuiserie, 14 employés',src:'Google Ads',date:'03.11',st:'new',
    need:'Suivi des chantiers et des heures par menuisier',adj:'Ajouter une vue planning par semaine',
@@ -293,6 +331,52 @@ let S={
   {n:'Back-office saimple.',d:'Interne · V1 à V4',s:0,e:100,p:15,c:'',ms:[[22,'V1'],[45,'V2']]}
  ]
 };
+
+
+const WK=Array.from({length:16},(_,i)=>{let n=45+i;if(n>53)n-=53;return 'S'+String(n).padStart(2,'0')});
+const WKD=Array.from({length:16},(_,i)=>{const d=new Date(Date.UTC(2026,10,2+7*i));return String(d.getUTCDate()).padStart(2,'0')+'.'+String(d.getUTCMonth()+1).padStart(2,'0')});
+const RES=[
+ {id:'lea',n:'Léa Martin',r:'Lead technique · Genève'},
+ {id:'marc',n:'Marc Dupuis',r:'Chef de projet · Lausanne'},
+ {id:'youssef',n:'Youssef Amrani',r:'Développeur · Casablanca'},
+ {id:'salma',n:'Salma Idrissi',r:'Développeuse · Casablanca'},
+ {id:'karim',n:'Karim Benali',r:'Développeur · Rabat'},
+ {id:'nadia',n:'Nadia El Fassi',r:'Développeuse · Casablanca'}
+];
+const PRJ=[
+ {id:'brandt',n:'Atelier mécanique Brandt',d:'Gestion d\'atelier',f:'Sur mesure+',cp:'Marc Dupuis',st:'En cours',s:0,e:11,due:9,p:35,sold:60,used:24,fc:68,
+  ms:[[3,'Maquettes validées','ok'],[7,'Recette V1','late'],[9,'Mise en production','risk']],
+  tasks:[['Planning atelier','Youssef Amrani','En cours'],['Import ordres de réparation','Youssef Amrani','À faire'],['Tableau de bord accueil','Karim Benali','À faire'],['Droits par profil','Léa Martin','Fait']]},
+ {id:'cuendet',n:'Domaine viticole Cuendet',d:'Suivi des vendanges',f:'Essentiel',cp:'Marc Dupuis',st:'En cours',s:0,e:4,due:4,p:70,sold:18,used:13,fc:18,
+  ms:[[2,'Recette','ok'],[4,'Livraison','ok']],
+  tasks:[['Saisie des parcelles','Salma Idrissi','Fait'],['Export cave','Salma Idrissi','En cours'],['Formation utilisateurs','Marc Dupuis','À faire']]},
+ {id:'morel',n:'Fiduciaire Morel',d:'Mandats et échéances',f:'Pro',cp:'Marc Dupuis',st:'À démarrer',s:2,e:10,due:10,p:0,sold:42,used:0,fc:42,
+  ms:[[2,'Lancement','ok'],[6,'Recette V1','ok'],[10,'Mise en production','ok']],
+  tasks:[['Modèle de données mandats','Salma Idrissi','À faire'],['Import logiciel comptable','Nadia El Fassi','À faire']]},
+ {id:'pittet',n:'Garage Pittet SA',d:'Réparations et stock',f:'Pro',cp:'Léa Martin',st:'À démarrer',s:3,e:11,due:10,p:0,sold:32,used:0,fc:36,
+  ms:[[3,'Lancement','ok'],[10,'Mise en production','late']],
+  tasks:[['Suivi des réparations','Karim Benali','À faire'],['Stock pièces','Karim Benali','À faire']]},
+ {id:'rochat',n:'Transports Rochat Sàrl',d:'Planning chauffeurs',f:'Pro',cp:'Léa Martin',st:'Prévisionnel',s:7,e:13,due:13,p:0,sold:30,used:0,fc:30,
+  ms:[[7,'Lancement si signature','ok']],tasks:[]},
+ {id:'bo',n:'Back-office saimple.',d:'Interne · V1 à V4',f:'Interne',cp:'Léa Martin',st:'En cours',s:0,e:16,due:16,p:15,sold:0,used:6,fc:45,
+  ms:[[3,'V1 Accueillir','ok'],[6,'V2 Suivre','ok'],[9,'V3 Encaisser','ok'],[15,'V4 Livrer','ok']],
+  tasks:[['Connexion Microsoft','Nadia El Fassi','En cours'],['Pipeline CRM','Youssef Amrani','En cours']]}
+];
+const ASG=[
+ ['brandt','lea',0,11,20],['brandt','marc',0,11,30],['brandt','youssef',0,11,100],['brandt','karim',8,11,40],
+ ['cuendet','lea',0,4,20],['cuendet','marc',0,4,20],['cuendet','salma',0,4,60],
+ ['morel','lea',2,10,20],['morel','marc',2,10,30],['morel','salma',2,10,80],['morel','nadia',2,10,50],
+ ['pittet','lea',3,11,30],['pittet','karim',3,11,100],
+ ['rochat','lea',7,13,20],['rochat','salma',10,13,60],
+ ['bo','lea',0,16,20],['bo','youssef',0,6,30],['bo','nadia',0,16,50]
+];
+function load(r,w){return ASG.filter(a=>a[1]===r&&w>=a[2]&&w<a[3]).reduce((t,a)=>t+a[4],0)}
+function resName(id){return RES.find(r=>r.id===id).n}
+function overloads(){const out=[];RES.forEach(r=>{let run=null;for(let w=0;w<=16;w++){const l=w<16?load(r.id,w):0;if(l>100){if(!run)run={r,a:w,b:w,max:l};else{run.b=w;run.max=Math.max(run.max,l)}}else if(run){out.push(run);run=null}}});return out}
+function issues(){const L=[];PRJ.forEach(p=>{if(p.e>p.due)L.push({k:'c',p:p.id,t:`${p.n} : fin prévue ${WK[p.e-1]}, échéance ${WK[p.due-1]} (+${p.e-p.due} sem.)`,cat:'Planning'});
+ if(p.sold&&p.fc>p.sold)L.push({k:'w',p:p.id,t:`${p.n} : prévision ${p.fc} j pour ${p.sold} j vendus (+${p.fc-p.sold} j)`,cat:'Budget'})});
+ overloads().forEach(o=>L.push({k:'c',r:o.r.id,t:`${o.r.n} : jusqu'à ${o.max} % de ${WK[o.a]} à ${WK[o.b]}`,cat:'Surcharge'}));return L}
+function prjIssues(id){const p=PRJ.find(x=>x.id===id);const ids=ASG.filter(a=>a[0]===id).map(a=>a[1]);return issues().filter(i=>i.p===id||(i.r&&ids.includes(i.r)&&overloads().some(o=>o.r.id===i.r&&ASG.some(a=>a[0]===id&&a[1]===i.r&&a[2]<=o.b&&a[3]>o.a))))}
 
 let cur='accueil', mainEl=document.getElementById('main'), layer=document.getElementById('layer');
 try{const r=localStorage.getItem('sb-role');if(r)S.role=r}catch(e){}
@@ -389,19 +473,45 @@ marketing(){
  </div>`;
 },
 projets(){
- const list=S.role==='dev'?S.projets.filter(p=>p.n.includes('Brandt')||p.n.includes('Back-office')):S.projets;
- return head('Projets','Portefeuille · novembre 2026 à février 2027')+`
+ const f=S.pf, iss=issues();
+ let list=S.role==='dev'?PRJ.filter(p=>ASG.some(a=>a[0]===p.id&&a[1]==='youssef')):PRJ;
+ list=list.filter(p=>(!f.st||p.st===f.st)&&(!f.cp||p.cp===f.cp)&&(!f.q||(p.n+' '+p.d).toLowerCase().includes(f.q.toLowerCase()))&&(!f.al||prjIssues(p.id).length));
+ const X=w=>w/16*100;
+ const nIss=k=>iss.filter(i=>i.cat===k).length;
+ return head('Projets','Portefeuille · S45 2026 à S07 2027','<button class="btn" data-go="ressources">Activité par ressource</button>')+`
  <div class="grid g4" style="margin-bottom:16px">
-  <div class="panel kpi"><div class="l">Projets en cours</div><div class="v num">3</div></div>
-  <div class="panel kpi"><div class="l">À démarrer</div><div class="v num">2</div></div>
-  <div class="panel kpi"><div class="l">Jalons ce mois</div><div class="v num">3</div></div>
-  <div class="panel kpi"><div class="l">Charge équipe</div><div class="v num">82 %</div><div class="d">4 devs · 1 lead</div></div>
+  <div class="panel kpi"><div class="l">Projets en cours</div><div class="v num">${PRJ.filter(p=>p.st==='En cours').length}</div><div class="d">${PRJ.filter(p=>p.st==='À démarrer').length} à démarrer, ${PRJ.filter(p=>p.st==='Prévisionnel').length} prévisionnel</div></div>
+  <div class="panel kpi"><div class="l">Dépassements de planning</div><div class="v num">${nIss('Planning')}</div><div class="d down">échéance contractuelle menacée</div></div>
+  <div class="panel kpi"><div class="l">Dépassements de budget</div><div class="v num">${nIss('Budget')}</div><div class="d down">${PRJ.filter(p=>p.sold&&p.fc>p.sold).reduce((t,p)=>t+p.fc-p.sold,0)} j au-delà du vendu</div></div>
+  <div class="panel kpi"><div class="l">Ressources en surcharge</div><div class="v num">${new Set(overloads().map(o=>o.r.id)).size} / ${RES.length}</div><div class="d down">au moins une semaine &gt; 100 %</div></div>
+ </div>
+ <div class="filters">
+  <input type="search" id="fq" placeholder="Rechercher un projet" value="${f.q}" aria-label="Rechercher un projet">
+  <select id="fst" aria-label="Statut"><option value="">Tous les statuts</option>${['En cours','À démarrer','Prévisionnel'].map(v=>`<option ${f.st===v?'selected':''}>${v}</option>`).join('')}</select>
+  <select id="fcp" aria-label="Chef de projet"><option value="">Tous les chefs de projet</option>${[...new Set(PRJ.map(p=>p.cp))].map(v=>`<option ${f.cp===v?'selected':''}>${v}</option>`).join('')}</select>
+  <label><input type="checkbox" id="fal" ${f.al?'checked':''}> Avec alertes seulement</label>
+  <span class="meta num">${list.length} projet${list.length>1?'s':''}</span>
  </div>
  <div class="panel tw"><div class="gantt">
-  <div class="gh"><span>Projet</span><div class="months"><span>Nov</span><span>Déc</span><span>Jan</span><span>Fév</span></div></div>
-  ${list.map(p=>`<div class="gr"><div class="nm">${p.n}<small>${p.d}</small></div><div class="track"><div class="today" style="left:2%"></div><div class="bar ${p.c}" style="left:${p.s}%;width:${p.e-p.s}%"><div class="pg" style="width:${p.p}%"></div></div>${p.ms.map(m=>`<div class="ms" style="left:calc(${m[0]}% - 6px)" title="${m[1]}"></div>`).join('')}</div></div>`).join('')}
-  <div class="bl" style="margin-top:10px"><span><i style="background:var(--lagon)"></i>En cours (part réalisée foncée)</span><span><i style="background:var(--lilas)"></i>À démarrer</span><span><i style="background:var(--warn)"></i>Jalon</span><span><i style="border-left:2px dashed var(--crit);width:2px;border-radius:0"></i>Aujourd'hui</span></div>
- </div></div>`;
+  <div class="gh"><span>Projet</span><div class="wk">${WK.map((w,i)=>`<span class="${i===0?'m':''}">${w}</span>`).join('')}</div></div>
+  ${list.length?list.map(p=>{const pi=prjIssues(p.id);return `<div class="gr click" data-prj="${p.id}" role="button" tabindex="0"><div class="nm">${p.n}<small>${p.d} · ${p.cp}</small>${pi.length?`<span class="flag">${pi.length} alerte${pi.length>1?'s':''}</span>`:''}</div><div class="track"><div class="today" style="left:${X(1/7)}%"></div><div class="bar ${p.st==='Prévisionnel'?'tent':p.st==='À démarrer'?'l':''} ${p.e>p.due?'late':''}" style="left:${X(p.s)}%;width:${X(p.e-p.s)}%"><div class="pg" style="width:${p.p}%"></div></div>${p.due<16?`<div class="due" style="left:${X(p.due)}%" title="Échéance contractuelle"></div>`:''}${p.ms.map(m=>`<div class="ms" style="left:calc(${X(m[0])}% - 6px);${m[2]==='late'?'background:var(--crit)':''}" title="${m[1]}"></div>`).join('')}</div></div>`}).join(''):'<p class="lock">Aucun projet ne correspond aux filtres.</p>'}
+  <div class="bl" style="margin-top:10px;flex-wrap:wrap"><span><i style="background:var(--lagon)"></i>En cours (part réalisée foncée)</span><span><i style="background:var(--lilas)"></i>À démarrer</span><span><i style="border:1.5px dashed var(--faint)"></i>Prévisionnel</span><span><i style="background:var(--warn)"></i>Jalon</span><span><i style="background:var(--crit)"></i>Jalon menacé</span><span><i style="border-left:2px solid var(--crit);width:2px;border-radius:0"></i>Échéance contractuelle</span></div>
+ </div></div>
+ <div class="panel" style="margin-top:16px"><h2>Problèmes détectés (${iss.length})</h2>${iss.map(i=>`<div class="alert"><span class="ic ${i.k}">!</span><div class="grow"><span class="chip">${i.cat}</span> ${i.t}</div>${i.p?`<button class="btn sm" data-prj="${i.p}">Ouvrir</button>`:`<button class="btn sm" data-go="ressources">Voir la charge</button>`}</div>`).join('')}</div>`;
+},
+ressources(){
+ const rl=S.rf?RES.filter(r=>S.rf==='dev'?r.r.startsWith('Dév'):!r.r.startsWith('Dév')):RES;
+ const cls=l=>l===0?'h0':l<=80?'h1':l<=100?'h2':'h3';
+ return head('Activité par ressource','Charge planifiée par semaine, tous projets confondus','<button class="btn" data-go="projets">Portefeuille</button><button class="btn pri" data-act="affect">Nouvelle affectation</button>')+`
+ <div class="filters"><select id="frf" aria-label="Rôle"><option value="">Toute l'équipe</option><option value="dev" ${S.rf==='dev'?'selected':''}>Développeurs</option><option value="lead" ${S.rf==='lead'?'selected':''}>Lead et chefs de projet</option></select>
+ <span class="bl" style="margin:0;flex-wrap:wrap"><span><i class="h1"></i>≤ 80 %</span><span><i class="h2"></i>81–100 %</span><span><i class="h3" style="outline-width:1px"></i>Surcharge &gt; 100 %</span></span></div>
+ <div class="panel tw"><table class="heat"><thead><tr><th>Ressource</th>${WK.map((w,i)=>`<th>${w}<br><span style="font-weight:500">${WKD[i]}</span></th>`).join('')}<th>Moy.</th></tr></thead><tbody>
+ ${rl.map(r=>{const ls=WK.map((_,w)=>load(r.id,w));const avg=Math.round(ls.reduce((a,b)=>a+b,0)/16);return `<tr><td class="nm">${r.n}<small>${r.r}</small></td>${ls.map((l,w)=>`<td class="c ${cls(l)}" data-cell="${r.id}|${w}" title="${r.n} · ${WK[w]} : ${l} %">${l||'·'}</td>`).join('')}<td class="${cls(avg)}">${avg}</td></tr>`}).join('')}
+ </tbody></table></div>
+ <div class="grid g2" style="margin-top:16px">
+  <div class="panel"><h2>Surcharges à résoudre</h2>${overloads().filter(o=>rl.includes(o.r)).map(o=>{const ps=[...new Set(ASG.filter(a=>a[1]===o.r.id&&a[2]<=o.b&&a[3]>o.a).map(a=>PRJ.find(p=>p.id===a[0]).n))];return `<div class="alert"><span class="ic c">!</span><div class="grow"><div class="ttl">${o.r.n} · ${o.max} % max</div><div class="meta">${WK[o.a]} à ${WK[o.b]} · ${ps.join(', ')}</div></div><button class="btn sm" data-act="lisser">Proposer un lissage</button></div>`}).join('')||'<p class="meta">Aucune surcharge.</p>'}</div>
+  <div class="panel"><h2>Capacité disponible (S45–S52)</h2><div class="list">${rl.map(r=>{const free=WK.slice(0,8).map((_,w)=>Math.max(0,100-load(r.id,w))).reduce((a,b)=>a+b,0)/100*5;return `<div class="li"><div class="grow"><div class="ttl">${r.n}</div><div class="meta">${r.r}</div></div><span class="num ttl">${free.toFixed(1)} j</span></div>`}).join('')}</div></div>
+ </div>`;
 },
 indicateurs(){
  const fun=[['Demandes',23],['Qualifiées',15],['Ateliers réservés',6],['Ateliers réalisés',4],['Devis envoyés',4],['Signés',2]];
@@ -429,6 +539,31 @@ function demDrawer(id){
  <div><h2>Aperçu généré</h2><div class="struct">App « ${d.need.split(' ').slice(0,4).join(' ')}… » · 6 menus · palette du logo client</div></div>
  <div class="acts">${d.st==='new'?`<button class="btn pri" data-conv="${d.id}">Convertir en prospect</button><button class="btn" data-arch="${d.id}">Archiver</button>`:''}<button class="btn" data-act="mail">Répondre par mail</button></div>`);
 }
+
+function prjDrawer(id){
+ const p=PRJ.find(x=>x.id===id), team=ASG.filter(a=>a[0]===id), pi=prjIssues(id), ov=overloads();
+ const pill={'En cours':'p-info','À démarrer':'p-new','Prévisionnel':'p-mute'}[p.st];
+ const mx=Math.max(p.sold,p.fc,p.used,1);
+ drawer(`<div class="dh"><div><span class="pill ${pill}">${p.st}</span> ${p.e>p.due?'<span class="pill p-crit">En retard</span>':''}<h1 style="font-size:20px;margin-top:6px">${p.n}</h1><div class="meta">${p.d} · ${p.f}</div></div><button class="x" data-close aria-label="Fermer">×</button></div>
+ <dl class="kv"><dt>Chef de projet</dt><dd>${p.cp}</dd><dt>Période planifiée</dt><dd class="num">${WK[p.s]} (${WKD[p.s]}) → ${WK[p.e-1]}</dd><dt>Échéance contractuelle</dt><dd class="num">${p.due<16?WK[p.due-1]:'—'}${p.e>p.due?` <span class="flag">+${p.e-p.due} sem.</span>`:''}</dd><dt>Avancement</dt><dd class="num">${p.p} %</dd></dl>
+ ${pi.length?`<div><h2>Problèmes</h2>${pi.map(i=>`<div class="alert"><span class="ic ${i.k}">!</span><div class="grow"><span class="chip">${i.cat}</span> ${i.t}</div></div>`).join('')}</div>`:''}
+ <div><h2>Budget (jours)</h2><div class="bud">
+  ${[['Vendus',p.sold,'var(--lagon)'],['Consommés',p.used,'var(--lilas)'],['Prévision à terminaison',p.fc,p.sold&&p.fc>p.sold?'var(--crit)':'var(--good)']].map(b=>`<div><div class="row" style="display:flex;justify-content:space-between;font-size:12.5px"><span>${b[0]}</span><span class="num ttl">${b[1]} j</span></div><div class="t"><i style="width:${b[1]/mx*100}%;background:${b[2]}"></i></div></div>`).join('')}
+ </div></div>
+ <div><h2>Jalons</h2><div class="list">${p.ms.map(m=>`<div class="li"><span class="date">${WK[m[0]-1]||WK[0]}</span><div class="grow">${m[1]}</div><span class="pill ${m[2]==='ok'?'p-ok':m[2]==='late'?'p-crit':'p-warn'}">${m[2]==='ok'?'Dans les temps':m[2]==='late'?'Menacé':'À surveiller'}</span></div>`).join('')}</div></div>
+ <div><h2>Équipe affectée</h2><div class="tw"><table><thead><tr><th>Ressource</th><th>Période</th><th style="text-align:right">Affectation</th><th>Charge totale max</th></tr></thead><tbody>
+ ${team.map(a=>{const r=RES.find(x=>x.id===a[1]);let m=0;for(let w=a[2];w<a[3];w++)m=Math.max(m,load(a[1],w));return `<tr><td><div class="ttl">${r.n}</div><div class="meta">${r.r}</div></td><td class="num">${WK[a[2]]}–${WK[a[3]-1]}</td><td class="num" style="text-align:right">${a[4]} %</td><td><span class="pill ${m>100?'p-crit':m>80?'p-info':'p-ok'}">${m} %</span></td></tr>`}).join('')}
+ </tbody></table></div></div>
+ ${p.tasks.length?`<div><h2>Tâches en cours</h2><div class="list">${p.tasks.map(t=>`<div class="li"><div class="grow"><div class="ttl">${t[0]}</div><div class="meta">${t[1]}</div></div><span class="pill ${t[2]==='Fait'?'p-ok':t[2]==='En cours'?'p-info':'p-mute'}">${t[2]}</span></div>`).join('')}</div></div>`:''}
+ <div class="acts"><button class="btn pri" data-act="affect">Modifier l'affectation</button><button class="btn" data-act="replan">Replanifier</button><button class="btn" data-go="ressources">Voir la charge</button></div>`);
+}
+function cellDrawer(rid,w){
+ const r=RES.find(x=>x.id===rid), l=load(rid,+w), as=ASG.filter(a=>a[1]===rid&&+w>=a[2]&&+w<a[3]);
+ drawer(`<div class="dh"><div><div class="meta">${WK[w]} · semaine du ${WKD[w]}</div><h1 style="font-size:20px">${r.n}</h1><div class="meta">${r.r}</div></div><button class="x" data-close aria-label="Fermer">×</button></div>
+ <div class="panel kpi"><div class="l">Charge planifiée</div><div class="v num" style="color:${l>100?'var(--crit)':'inherit'}">${l} %</div><div class="d ${l>100?'down':''}">${l>100?`Surcharge : ${((l-100)/100*5).toFixed(1)} j de trop cette semaine`:`${((100-l)/100*5).toFixed(1)} j disponibles`}</div></div>
+ <div><h2>Répartition</h2><div class="list">${as.map(a=>{const p=PRJ.find(x=>x.id===a[0]);return `<div class="li"><div class="grow"><div class="ttl">${p.n}</div><div class="meta">${p.d}</div></div><span class="num ttl">${a[4]} %</span><button class="btn sm" data-prj="${p.id}">Projet</button></div>`}).join('')||'<p class="meta">Aucune affectation cette semaine.</p>'}</div></div>
+ ${l>100?'<div class="acts"><button class="btn pri" data-act="lisser">Proposer un lissage</button><button class="btn" data-act="affect">Réaffecter</button></div>':''}`);
+}
 function dealDrawer(id){
  const d=S.deals.find(x=>x.id===id);
  drawer(`<div class="dh"><div><span class="pill p-info">${STAGES[d.st]}</span><h1 style="font-size:20px;margin-top:6px">${d.ent}</h1><div class="meta">${d.ct}</div></div><button class="x" data-close aria-label="Fermer">×</button></div>
@@ -444,10 +579,12 @@ function dealDrawer(id){
 }
 
 document.addEventListener('click',e=>{
- const t=e.target.closest('[data-go],[data-dem],[data-deal],[data-close],[data-conv],[data-arch],[data-adv],[data-fit],[data-val],[data-regen],[data-ch],[data-act]');
+ const t=e.target.closest('[data-prj],[data-cell],[data-go],[data-dem],[data-deal],[data-close],[data-conv],[data-arch],[data-adv],[data-fit],[data-val],[data-regen],[data-ch],[data-act]');
  if(!t)return;
  const ds=t.dataset;
- if(ds.go!==undefined){closeD();go(ds.go)}
+ if(ds.prj)prjDrawer(ds.prj);
+ else if(ds.cell){const [r,w]=ds.cell.split('|');cellDrawer(r,w)}
+ else if(ds.go!==undefined){closeD();go(ds.go)}
  else if(ds.dem)demDrawer(ds.dem);
  else if(ds.deal)dealDrawer(+ds.deal);
  else if(ds.close!==undefined)closeD();
@@ -458,8 +595,12 @@ document.addEventListener('click',e=>{
  else if(ds.val){S.posts.find(p=>p.id===+ds.val).st='ok';render();toast('Validé : programmé dans Buffer')}
  else if(ds.regen){toast('Nouvelle version générée (démo)')}
  else if(ds.ch){const [id,c]=ds.ch.split('|');S.posts.find(p=>p.id===+id).ch=c;render()}
- else if(ds.act){toast({newrdv:'Rendez-vous créé dans Outlook (démo)',relance:'Relance envoyée (démo)',idea:'Idée ajoutée à la banque (démo)',gen:'Brouillons générés pour 4 canaux (démo)',mail:'Ouverture du mail dans Outlook (démo)',tabdemo:'Onglet disponible dans la version réelle'}[ds.act]||'Démo')}
+ else if(ds.act){toast({newrdv:'Rendez-vous créé dans Outlook (démo)',relance:'Relance envoyée (démo)',idea:'Idée ajoutée à la banque (démo)',gen:'Brouillons générés pour 4 canaux (démo)',mail:'Ouverture du mail dans Outlook (démo)',tabdemo:'Onglet disponible dans la version réelle',affect:'Affectation enregistrée (démo)',replan:'Replanification proposée (démo)',lisser:'Lissage proposé : 2 tâches décalées d\'une semaine (démo)'}[ds.act]||'Démo')}
 });
+
+document.addEventListener('input',e=>{if(e.target.id==='fq'){S.pf.q=e.target.value;const pos=e.target.selectionStart;render();const q=document.getElementById('fq');q.focus();q.setSelectionRange(pos,pos)}});
+document.addEventListener('change',e=>{const id=e.target.id;if(id==='fst'){S.pf.st=e.target.value;render()}else if(id==='fcp'){S.pf.cp=e.target.value;render()}else if(id==='fal'){S.pf.al=e.target.checked;render()}else if(id==='frf'){S.rf=e.target.value;render()}});
+document.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.matches('.gr[data-prj]')){e.preventDefault();prjDrawer(e.target.dataset.prj)}});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeD()});
 document.getElementById('role').addEventListener('change',e=>{S.role=e.target.value;try{localStorage.setItem('sb-role',S.role)}catch(_){}go(cur)});
 window.addEventListener('hashchange',()=>go(location.hash.slice(1)));
