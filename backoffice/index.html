@@ -277,12 +277,14 @@ const I={
  mkt:'<path d="M4 10v4l12 5V5z M16 9a3 3 0 010 6 M7 14l1 5"/>',
  ppm:'<path d="M4 6h9 M7 12h10 M10 18h10"/>',
  res:'<path d="M9 11a3 3 0 100-6 3 3 0 000 6z M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6 M16 5a3 3 0 010 6 M18 14c2 .7 3 2.8 3 6"/>',
+ app:'<path d="M7 11l4-4 3 3 4-4 M3 20h18 M18 6h3v3 M6 14v6 M11 12v8 M16 15v5"/>',
  kpi:'<path d="M4 19V9 M10 19V5 M16 19v-7 M22 19H2"/>'
 };
 const MODS=[
  {id:'accueil',n:'Accueil',ic:'home',g:'',r:['admin','direction','commercial','cdp','dev']},
  {id:'demandes',n:'Demandes',ic:'inbox',g:'',r:['admin','direction','commercial']},
  {id:'crm',n:'Pipeline',ic:'crm',g:'Commercial',r:['admin','direction','commercial','cdp']},
+ {id:'apporteurs',n:'Apporteurs',ic:'app',g:'Commercial',r:['admin','direction','commercial']},
  {id:'rdv',n:'RDV et ateliers',ic:'cal',g:'Commercial',r:['admin','direction','commercial','cdp']},
  {id:'marketing',n:'Marketing',ic:'mkt',g:'',r:['admin','direction','commercial','cdp']},
  {id:'projets',n:'Planning',ic:'ppm',g:'Projets',r:['admin','direction','cdp','dev']},
@@ -318,14 +320,14 @@ let S={
   {id:2,ent:'Cabinet dentaire du Lac',ct:'Dr Sophie Monnier',st:0,f:'Essentiel',m:12000,next:'Appeler',app:'—'},
   {id:3,ent:'Transports Rochat Sàrl',ct:'Marc Rochat',st:2,f:'Pro',m:32000,next:'Atelier le 06.11',app:'Fiduciaire Morel'},
   {id:4,ent:'Clinique vétérinaire des Alpes',ct:'Laura Berset',st:1,f:'Essentiel',m:14000,next:'Proposer des dates',app:'—'},
-  {id:5,ent:'Garage Pittet SA',ct:'Nicolas Pittet',st:3,f:'Pro',m:28000,next:'Envoyer le devis',app:'Consultant interne'},
+  {id:5,ent:'Garage Pittet SA',ct:'Nicolas Pittet',st:3,f:'Pro',m:28000,next:'Envoyer le devis',app:'RedApporteur · Sarah K.'},
   {id:6,ent:'Fiduciaire Morel',ct:'Claire Morel',st:4,f:'Pro',m:38500,next:'Relance le 07.11',app:'—'},
   {id:7,ent:'Atelier mécanique Brandt',ct:'Thomas Brandt',st:5,f:'Sur mesure+',m:52000,next:'Lancement projet',app:'—'},
-  {id:8,ent:'Domaine viticole Cuendet',ct:'Pierre Cuendet',st:5,f:'Essentiel',m:16500,next:'Recette le 14.11',app:'Consultant interne'},
-  {id:9,ent:'Ecole de musique Allegro',ct:'Mireille Dubois',st:4,f:'Essentiel',m:12500,next:'Relance le 05.11',app:'—'}
+  {id:8,ent:'Domaine viticole Cuendet',ct:'Pierre Cuendet',st:5,f:'Essentiel',m:16500,next:'Recette le 14.11',app:'RedApporteur · Kevin'},
+  {id:9,ent:'Ecole de musique Allegro',ct:'Mireille Dubois',st:4,f:'Essentiel',m:12500,next:'Relance le 05.11',app:'RedApporteur · Anthony'}
  ],
  rdv:[
-  {d:'Mer 05.11',h:'10:00',ent:'Ecole de musique Allegro',t:'Relance devis',type:'Appel',who:'Commercial'},
+  {d:'Mer 05.11',h:'10:00',ent:'Ecole de musique Allegro',t:'Relance devis',type:'Appel',who:'Commercial',ref:'Anthony'},
   {d:'Jeu 06.11',h:'09:00',ent:'Transports Rochat Sàrl',t:'Atelier Express (2 h)',type:'Atelier',who:'Didi + Yassine'},
   {d:'Ven 07.11',h:'14:00',ent:'Fiduciaire Morel',t:'Relance devis Pro',type:'Teams',who:'Commercial'},
   {d:'Lun 10.11',h:'11:00',ent:'Clinique vétérinaire des Alpes',t:'Qualification',type:'Teams',who:'Commercial'},
@@ -415,6 +417,21 @@ function issues(){const L=[];PRJ.forEach(p=>{if(p.e>p.due)L.push({k:'c',p:p.id,t
  overloads().forEach(o=>L.push({k:'c',r:o.r.id,t:`${o.r.n} : jusqu'à ${o.max} % de ${WK[o.a]} à ${WK[o.b]}`,cat:'Surcharge'}));return L}
 function prjIssues(id){const p=PRJ.find(x=>x.id===id);const ids=ASG.filter(a=>a[0]===id).map(a=>a[1]);return issues().filter(i=>i.p===id||(i.r&&ids.includes(i.r)&&overloads().some(o=>o.r.id===i.r&&ASG.some(a=>a[0]===id&&a[1]===i.r&&a[2]<=o.b&&a[3]>o.a))))}
 
+
+const PRIME=500;
+S.recos=[
+ {id:'R-025',date:'03.11',app:'Nicolas T.',ent:'Régie immobilière des Pâquis',ct:'Isabelle Rey, directrice',ctx:'Suivi des interventions dans 40 immeubles, aujourd\'hui sur 2 fichiers Excel partagés.',why:'Ancien collègue de la directrice ; elle a demandé un contact cette semaine.',st:'Nouvelle',prime:'Non due'},
+ {id:'R-024',date:'03.11',app:'Kevin',ent:'Menuiserie Favre SA',ct:'Julien Favre',ctx:'Veut remplacer ses Excel de chantier, a aussi déposé une demande sur le site.',why:'Rencontré au salon Habitat-Jardin, budget validé pour début 2027.',st:'Nouvelle',prime:'Non due'},
+ {id:'R-023',date:'01.11',app:'Gégé',ent:'Pharmacie du Bourg',ct:'Thierry Golay, pharmacien',ctx:'Gestion des ordonnances récurrentes et du stock des 2 officines.',why:'Client de sa mission précédente, a lui-même évoqué le besoin.',st:'Nouvelle',prime:'Non due'},
+ {id:'R-022',date:'28.10',app:'Anthony',ent:'Ecole de musique Allegro',ct:'Mireille Dubois',ctx:'Planning des cours et facturation des élèves.',why:'Sa fille y est inscrite ; la directrice cherche une solution depuis 1 an.',st:'Atelier réalisé',prime:'Due à la signature'},
+ {id:'R-020',date:'15.10',app:'Sarah K.',ent:'Garage Pittet SA',ct:'Nicolas Pittet',ctx:'Suivi des réparations et stock de pièces.',why:'Client de longue date de son cabinet, besoin exprimé en réunion.',st:'Atelier réalisé',prime:'Due à la signature'},
+ {id:'R-021',date:'20.10',app:'Kevin',ent:'Domaine viticole Cuendet',ct:'Pierre Cuendet',ctx:'Suivi des vendanges et des parcelles.',why:'Voisin du domaine, a présenté le dirigeant en personne.',st:'Signée',prime:'Versée'},
+ {id:'R-019',date:'10.10',app:'Gégé',ent:'Café des Arts',ct:'Luc Perret',ctx:'Commandes fournisseurs.',why:'Contact personnel.',st:'Refusée',prime:'Non due',motif:'Pas de budget avant 2027'}
+];
+const inCRM=r=>S.deals.some(d=>d.ent===r.ent);
+const recoPill=st=>({'Nouvelle':'p-new','RDV planifié':'p-info','Atelier réalisé':'p-warn','Signée':'p-ok','Refusée':'p-mute'})[st];
+const primePill=st=>({'Non due':'p-mute','Due à la signature':'p-warn','À verser':'p-crit','Versée':'p-ok'})[st];
+
 let cur='accueil', mainEl=document.getElementById('main'), layer=document.getElementById('layer');
 try{const r=localStorage.getItem('sb-role');if(r)S.role=r}catch(e){}
 document.getElementById('role').value=S.role;
@@ -459,6 +476,7 @@ accueil(){
   <div class="panel"><h2>Prochains rendez-vous</h2><div class="list">${S.rdv.slice(0,4).map(r=>`<div class="li"><span class="date">${r.d}<br>${r.h}</span><div class="grow"><div class="ttl">${r.ent}</div><div class="meta">${r.t} · ${r.type}</div></div></div>`).join('')}</div></div>
   <div class="panel"><h2>À traiter</h2><div class="list">
    <div class="li"><span class="vip">★ 1</span><div class="grow">Demande VIP à rappeler sous 4 h : Menuiserie Favre SA</div>${allowed('demandes')?'<button class="btn sm" data-dem="D-0142">Ouvrir</button>':''}</div>
+   <div class="li"><span class="pill p-new">3</span><div class="grow">Recommandations RedApporteur à traiter</div>${allowed('apporteurs')?'<button class="btn sm" data-go="apporteurs">Voir</button>':''}</div>
    <div class="li"><span class="pill p-new">2</span><div class="grow">Nouvelles demandes du site</div>${allowed('demandes')?'<button class="btn sm" data-go="demandes">Voir</button>':''}</div>
    <div class="li"><span class="pill p-warn">2</span><div class="grow">Posts à valider</div><button class="btn sm" data-go="marketing">Valider</button></div>
    <div class="li"><span class="pill p-crit">${late.length}</span><div class="grow">Paiement en retard : ${late.map(l=>l.ent).join(', ')}</div><button class="btn sm" data-go="finance">Voir</button></div>
@@ -488,13 +506,38 @@ crm(){
  const total=s=>S.deals.filter(d=>d.st===s).reduce((a,d)=>a+d.m,0);
  return head('CRM','Pipeline des opportunités','<button class="btn" data-go="indicateurs">Indicateurs</button>')+`
  <div class="kan">${STAGES.map((s,i)=>`<div class="col"><h3><span>${s}</span><span class="num">${S.deals.filter(d=>d.st===i).length}</span></h3>
- ${S.deals.filter(d=>d.st===i).map(d=>`<div class="card" data-deal="${d.id}"><div class="ttl">${d.ent}</div><div class="row"><span class="chip">${d.f}</span><span class="num meta">${chf(d.m)}</span></div><div class="meta">→ ${d.next}</div></div>`).join('')}
+ ${S.deals.filter(d=>d.st===i).map(d=>`<div class="card" data-deal="${d.id}"><div class="ttl">${d.ent}</div><div class="row"><span class="chip">${d.f}</span><span class="num meta">${chf(d.m)}</span></div><div class="meta">→ ${d.next}</div>${(d.app||'').startsWith('RedApporteur')?`<span class="chip" style="align-self:flex-start">${d.app}</span>`:''}</div>`).join('')}
  <div class="meta num" style="padding:2px 4px">${chf(total(i))}</div></div>`).join('')}</div>`;
+},
+apporteurs(){
+ const R=S.recos, due=R.filter(r=>r.prime==='À verser').length, paid=R.filter(r=>r.prime==='Versée').length;
+ const apps=[...new Set(R.map(r=>r.app))];
+ return head('Apporteurs','Recommandations RedApporteur · prime de CHF 500 versée à la signature','<button class="btn pri" data-act="newreco">Nouvelle recommandation</button>')+`
+ <div class="grid g4">
+  <div class="panel kpi"><div class="l">Recommandations (30 j)</div><div class="v num">${R.length}</div><div class="d">${R.filter(r=>r.st==='Nouvelle').length} à traiter</div></div>
+  <div class="panel kpi"><div class="l">Transformées en RDV</div><div class="v num">${R.filter(r=>!['Nouvelle','Refusée'].includes(r.st)).length}</div><div class="d">${Math.round(R.filter(r=>!['Nouvelle','Refusée'].includes(r.st)).length/R.length*100)} % des recommandations</div></div>
+  <div class="panel kpi"><div class="l">Signées</div><div class="v num">${R.filter(r=>r.st==='Signée').length}</div><div class="d">${chf(S.deals.filter(d=>d.st===5&&(d.app||'').startsWith('RedApporteur')).reduce((t,d)=>t+d.m,0))} de CA</div></div>
+  <div class="panel kpi"><div class="l">Primes RedApporteur</div><div class="v num">${chf(paid*PRIME)}</div><div class="d ${due?'down':''}">${due?chf(due*PRIME)+' à verser':'versées, rien en attente'}</div></div>
+ </div>
+ <div class="panel tw" style="margin-top:16px"><table><thead><tr><th>N°</th><th>Apporteur</th><th>Client recommandé</th><th>CRM</th><th>Contexte</th><th>Statut</th><th>Prime</th></tr></thead><tbody>
+ ${R.map(r=>`<tr class="click" data-reco="${r.id}"><td class="num">${r.id}<div class="meta">${r.date}</div></td><td class="ttl">${r.app}</td><td><div class="ttl">${r.ent}</div><div class="meta">${r.ct}</div></td><td>${inCRM(r)?'<span class="pill p-info">Déjà au CRM</span>':'<span class="pill p-new">Nouveau</span>'}</td><td style="min-width:220px">${r.ctx}</td><td><span class="pill ${recoPill(r.st)}">${r.st}</span></td><td><span class="pill ${primePill(r.prime)}">${r.prime}</span></td></tr>`).join('')}
+ </tbody></table></div>
+ <div class="grid g2" style="margin-top:16px">
+  <div class="panel tw"><h2>Par apporteur</h2><table><thead><tr><th>Apporteur</th><th style="text-align:right">Recos</th><th style="text-align:right">Signées</th><th style="text-align:right">Primes versées</th><th style="text-align:right">Primes à venir</th></tr></thead><tbody>
+  ${apps.map(a=>{const x=R.filter(r=>r.app===a);return `<tr><td class="ttl">${a}</td><td class="num" style="text-align:right">${x.length}</td><td class="num" style="text-align:right">${x.filter(r=>r.st==='Signée').length}</td><td class="num" style="text-align:right">${chf(x.filter(r=>r.prime==='Versée').length*PRIME)}</td><td class="num" style="text-align:right">${chf(x.filter(r=>['Due à la signature','À verser'].includes(r.prime)).length*PRIME)}</td></tr>`}).join('')}
+  </tbody></table></div>
+  <div class="panel"><h2>Bientôt : l'app apporteurs</h2><p class="meta" style="margin:0 0 10px">Les apporteurs pousseront eux-mêmes un contact depuis leur téléphone, avec :</p><div class="list">
+   <div class="li"><span class="chip">1</span><div class="grow">Le contact et son entreprise</div></div>
+   <div class="li"><span class="chip">2</span><div class="grow">Le contexte : besoin, outils actuels, urgence</div></div>
+   <div class="li"><span class="chip">3</span><div class="grow">Ce qui rend la piste sérieuse : lien avec le dirigeant, budget, demande explicite</div></div>
+   <div class="li"><span class="chip">4</span><div class="grow">Le suivi de leur recommandation et de leur prime</div></div>
+  </div></div>
+ </div>`;
 },
 rdv(){
  return head('RDV et ateliers','Synchronisé avec les agendas Outlook (démo)','<button class="btn pri" data-act="newrdv">Nouveau rendez-vous</button>')+`
  <div class="grid g2">
-  <div class="panel"><h2>Agenda</h2><div class="list">${S.rdv.map(r=>`<div class="li"><span class="date">${r.d}<br>${r.h}</span><div class="grow"><div class="ttl">${r.ent}</div><div class="meta">${r.t} · ${r.who}</div></div><span class="pill ${r.type==='Atelier'?'p-new':'p-info'}">${r.type}</span></div>`).join('')}</div></div>
+  <div class="panel"><h2>Agenda</h2><div class="list">${S.rdv.map(r=>`<div class="li"><span class="date">${r.d}<br>${r.h}</span><div class="grow"><div class="ttl">${r.ent}</div><div class="meta">${r.t} · ${r.who}</div>${r.ref?`<span class="chip">RedApporteur · ${r.ref}</span>`:''}</div><span class="pill ${r.type==='Atelier'?'p-new':'p-info'}">${r.type}</span></div>`).join('')}</div></div>
   <div class="panel"><h2>Comptes rendus récents</h2><div class="list">${S.cr.map(c=>`<div class="li" style="align-items:flex-start"><span class="date">${c.d}</span><div class="grow"><div class="ttl">${c.ent} · ${c.t}</div><div class="meta">${c.txt}</div></div></div>`).join('')}</div></div>
  </div>`;
 },
@@ -620,11 +663,28 @@ function cellDrawer(rid,w){
  <div><h2>Répartition</h2><div class="list">${as.map(a=>{const p=PRJ.find(x=>x.id===a[0]);return `<div class="li"><div class="grow"><div class="ttl">${p.n}</div><div class="meta">${p.d}</div></div><span class="num ttl">${a[4]} %</span><button class="btn sm" data-prj="${p.id}">Projet</button></div>`}).join('')||'<p class="meta">Aucune affectation cette semaine.</p>'}</div></div>
  ${l>100?'<div class="acts"><button class="btn pri" data-act="lisser">Proposer un lissage</button><button class="btn" data-act="affect">Réaffecter</button></div>':''}`);
 }
+
+function recoDrawer(id){
+ const r=S.recos.find(x=>x.id===id), crm=inCRM(r), deal=S.deals.find(d=>d.ent===r.ent);
+ drawer(`<div class="dh"><div><div class="meta num">${r.id} · reçue le ${r.date} · RedApporteur</div><h1 style="font-size:20px">${r.ent}</h1><div class="meta">${r.ct}</div></div><button class="x" data-close aria-label="Fermer">×</button></div>
+ <div class="acts"><span class="pill ${recoPill(r.st)}">${r.st}</span>${crm?'<span class="pill p-info">Déjà au CRM</span>':'<span class="pill p-new">Nouveau contact</span>'}</div>
+ <dl class="kv"><dt>Apporteur</dt><dd>${r.app}</dd><dt>Contexte</dt><dd>${r.ctx}</dd><dt>Pourquoi c'est sérieux</dt><dd>${r.why}</dd>${r.motif?`<dt>Motif du refus</dt><dd>${r.motif}</dd>`:''}<dt>Prime RedApporteur</dt><dd>${chf(PRIME)} · <span class="pill ${primePill(r.prime)}">${r.prime}</span></dd></dl>
+ ${crm?`<div class="panel" style="padding:12px"><div class="meta">Dans le CRM</div><div class="ttl">${deal.ent} · ${STAGES[deal.st]}</div><div class="meta">${deal.f} · ${chf(deal.m)}${deal.app&&deal.app!=='—'?' · '+deal.app:''}</div></div>`:''}
+ <div class="acts">
+  ${r.st==='Nouvelle'?`<button class="btn pri" data-rrdv="${r.id}">Planifier le premier RDV</button>`:''}
+  ${!crm&&r.st!=='Refusée'?`<button class="btn" data-rcrm="${r.id}">Créer dans le CRM</button>`:''}
+  ${crm?`<button class="btn" data-deal="${deal.id}">Ouvrir la fiche CRM</button>`:''}
+  ${r.prime==='À verser'?`<button class="btn" data-rpay="${r.id}">Marquer la prime versée</button>`:''}
+  ${r.st==='Nouvelle'?`<button class="btn" data-rno="${r.id}">Refuser</button>`:''}
+ </div>
+ <p class="note">La prime de ${chf(PRIME)} devient due quand le client signe ; elle est versée avec la paie suivante.</p>`);
+}
+function addDeal(r,st){let d=S.deals.find(x=>x.ent===r.ent);if(!d){d={id:Math.max(...S.deals.map(x=>x.id))+1,ent:r.ent,ct:r.ct,st,f:'À définir',m:12000,next:'Premier RDV',app:'RedApporteur · '+r.app};S.deals.push(d)}else if(!d.app||d.app==='—')d.app='RedApporteur · '+r.app;return d}
 function dealDrawer(id){
  const d=S.deals.find(x=>x.id===id);
  drawer(`<div class="dh"><div><span class="pill p-info">${STAGES[d.st]}</span><h1 style="font-size:20px;margin-top:6px">${d.ent}</h1><div class="meta">${d.ct}</div></div><button class="x" data-close aria-label="Fermer">×</button></div>
  <div class="tabs" role="tablist"><button role="tab" aria-selected="true">Résumé</button><button role="tab" aria-selected="false" data-act="tabdemo">Mails</button><button role="tab" aria-selected="false" data-act="tabdemo">Documents</button></div>
- <dl class="kv"><dt>Formule</dt><dd>${d.f}</dd><dt>Montant</dt><dd class="num">${chf(d.m)}</dd><dt>Prochaine action</dt><dd>${d.next}</dd><dt>Apporteur</dt><dd>${d.app}</dd></dl>
+ <dl class="kv"><dt>Formule</dt><dd>${d.f}</dd><dt>Montant</dt><dd class="num">${chf(d.m)}</dd><dt>Prochaine action</dt><dd>${d.next}</dd><dt>Apporteur</dt><dd>${d.app}${(d.app||'').startsWith('RedApporteur')?` · prime ${chf(PRIME)} ${d.st===5?'due':'à la signature'}`:''}</dd></dl>
  <div><h2>Historique</h2><div class="tl">
   <div class="tli mail"><div class="ttl">Mail reçu · « Re: votre proposition »</div><div class="meta">Il y a 2 jours · rattaché automatiquement (Outlook)</div></div>
   <div class="tli"><div class="ttl">Atelier Express</div><div class="meta">Compte rendu disponible · 2 h · Teams</div></div>
@@ -635,11 +695,16 @@ function dealDrawer(id){
 }
 
 document.addEventListener('click',e=>{
- const t=e.target.closest('[data-pk],[data-vip],[data-prj],[data-cell],[data-go],[data-dem],[data-deal],[data-close],[data-conv],[data-arch],[data-adv],[data-fit],[data-val],[data-regen],[data-ch],[data-act]');
+ const t=e.target.closest('[data-reco],[data-rrdv],[data-rcrm],[data-rpay],[data-rno],[data-pk],[data-vip],[data-prj],[data-cell],[data-go],[data-dem],[data-deal],[data-close],[data-conv],[data-arch],[data-adv],[data-fit],[data-val],[data-regen],[data-ch],[data-act]');
  if(!t)return;
  if(e.target.closest('select'))return;
  const ds=t.dataset;
- if(ds.pk!==undefined){S.pf.k=S.pf.k===ds.pk?'':ds.pk;render()}
+ if(ds.reco)recoDrawer(ds.reco);
+ else if(ds.rrdv){const r=S.recos.find(x=>x.id===ds.rrdv);r.st='RDV planifié';const d=addDeal(r,1);if(d.st<1)d.st=1;S.rdv.push({d:'Mar 11.11',h:'14:00',ent:r.ent,t:'Premier rendez-vous',type:'Teams',who:'Commercial',ref:r.app});render();recoDrawer(r.id);toast('RDV planifié le 11.11 et ajouté à l\'agenda')}
+ else if(ds.rcrm){const r=S.recos.find(x=>x.id===ds.rcrm);addDeal(r,0);render();recoDrawer(r.id);toast('Contact créé dans le CRM')}
+ else if(ds.rpay){const r=S.recos.find(x=>x.id===ds.rpay);r.prime='Versée';render();recoDrawer(r.id);toast('Prime de CHF 500 marquée versée')}
+ else if(ds.rno){const r=S.recos.find(x=>x.id===ds.rno);r.st='Refusée';r.motif='Hors cible';r.prime='Non due';render();recoDrawer(r.id);toast('Recommandation refusée, l\'apporteur sera prévenu')}
+ else if(ds.pk!==undefined){S.pf.k=S.pf.k===ds.pk?'':ds.pk;render()}
  else if(ds.vip){const d=S.demandes.find(x=>x.id===ds.vip);d.vip=!d.vip;if(d.vip&&!d.why)d.why='Marqué manuellement';render();demDrawer(d.id);toast(d.vip?'Marquée VIP : rappel sous 4 h':'Statut VIP retiré')}
  else if(ds.prj)prjDrawer(ds.prj);
  else if(ds.cell){const [r,w]=ds.cell.split('|');cellDrawer(r,w)}
@@ -649,12 +714,12 @@ document.addEventListener('click',e=>{
  else if(ds.close!==undefined)closeD();
  else if(ds.conv){const d=S.demandes.find(x=>x.id===ds.conv);d.st='conv';const deal=S.deals.find(x=>x.ent===d.ent);if(deal)deal.st=1;closeD();render();toast('Converti en prospect qualifié')}
  else if(ds.arch){S.demandes.find(x=>x.id===ds.arch).st='arch';closeD();render();toast('Demande archivée')}
- else if(ds.adv){const d=S.deals.find(x=>x.id===+ds.adv);d.st++;render();dealDrawer(d.id);toast(d.st===5?'Signé : projet créé dans le portefeuille':'Statut mis à jour')}
+ else if(ds.adv){const d=S.deals.find(x=>x.id===+ds.adv);d.st++;if(d.st===5){const rc=S.recos.find(r=>r.ent===d.ent&&r.prime!=='Versée');if(rc){rc.st='Signée';rc.prime='À verser'}}render();dealDrawer(d.id);toast(d.st===5?'Signé : projet créé dans le portefeuille':'Statut mis à jour')}
  else if(ds.fit){const f=S.fin[+ds.fit];f.st='Facturé';f.fit='FN-2026-04'+(20+ +ds.fit);render();toast('Facture créée dans Fitnet (démo)')}
  else if(ds.val){S.posts.find(p=>p.id===+ds.val).st='ok';render();toast('Validé : programmé dans Buffer')}
  else if(ds.regen){toast('Nouvelle version générée (démo)')}
  else if(ds.ch){const [id,c]=ds.ch.split('|');S.posts.find(p=>p.id===+id).ch=c;render()}
- else if(ds.act){toast({newrdv:'Rendez-vous créé dans Outlook (démo)',relance:'Relance envoyée (démo)',idea:'Idée ajoutée à la banque (démo)',gen:'Brouillons générés pour 4 canaux (démo)',mail:'Ouverture du mail dans Outlook (démo)',tabdemo:'Onglet disponible dans la version réelle',affect:'Affectation enregistrée (démo)',replan:'Replanification proposée (démo)',lisser:'Lissage proposé : 2 tâches décalées d\'une semaine (démo)'}[ds.act]||'Démo')}
+ else if(ds.act){toast({newrdv:'Rendez-vous créé dans Outlook (démo)',relance:'Relance envoyée (démo)',idea:'Idée ajoutée à la banque (démo)',gen:'Brouillons générés pour 4 canaux (démo)',mail:'Ouverture du mail dans Outlook (démo)',newreco:'Formulaire de recommandation (démo)',tabdemo:'Onglet disponible dans la version réelle',affect:'Affectation enregistrée (démo)',replan:'Replanification proposée (démo)',lisser:'Lissage proposé : 2 tâches décalées d\'une semaine (démo)'}[ds.act]||'Démo')}
 });
 
 document.addEventListener('input',e=>{if(e.target.id==='fq'){S.pf.q=e.target.value;const pos=e.target.selectionStart;render();const q=document.getElementById('fq');q.focus();q.setSelectionRange(pos,pos)}});
