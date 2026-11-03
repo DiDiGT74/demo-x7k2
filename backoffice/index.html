@@ -291,7 +291,7 @@ let S={
  ],
  rdv:[
   {d:'Mer 05.11',h:'10:00',ent:'Ecole de musique Allegro',t:'Relance devis',type:'Appel',who:'Commercial'},
-  {d:'Jeu 06.11',h:'09:00',ent:'Transports Rochat Sàrl',t:'Atelier Express (2 h)',type:'Atelier',who:'Admin + Lead dev'},
+  {d:'Jeu 06.11',h:'09:00',ent:'Transports Rochat Sàrl',t:'Atelier Express (2 h)',type:'Atelier',who:'Didi + Yassine'},
   {d:'Ven 07.11',h:'14:00',ent:'Fiduciaire Morel',t:'Relance devis Pro',type:'Teams',who:'Commercial'},
   {d:'Lun 10.11',h:'11:00',ent:'Clinique vétérinaire des Alpes',t:'Qualification',type:'Teams',who:'Commercial'},
   {d:'Ven 14.11',h:'15:00',ent:'Domaine viticole Cuendet',t:'Recette V1',type:'Sur site',who:'Chef de projet'}
@@ -336,39 +336,41 @@ let S={
 const WK=Array.from({length:16},(_,i)=>{let n=45+i;if(n>53)n-=53;return 'S'+String(n).padStart(2,'0')});
 const WKD=Array.from({length:16},(_,i)=>{const d=new Date(Date.UTC(2026,10,2+7*i));return String(d.getUTCDate()).padStart(2,'0')+'.'+String(d.getUTCMonth()+1).padStart(2,'0')});
 const RES=[
- {id:'lea',n:'Léa Martin',r:'Lead technique · Genève'},
- {id:'marc',n:'Marc Dupuis',r:'Chef de projet · Lausanne'},
- {id:'youssef',n:'Youssef Amrani',r:'Développeur · Casablanca'},
- {id:'salma',n:'Salma Idrissi',r:'Développeuse · Casablanca'},
- {id:'karim',n:'Karim Benali',r:'Développeur · Rabat'},
- {id:'nadia',n:'Nadia El Fassi',r:'Développeuse · Casablanca'}
+ {id:'didi',n:'Didi',r:'Chef de projet · porteur d\'offre'},
+ {id:'guillaume',n:'Guillaume G',r:'Chef de projet'},
+ {id:'quentin',n:'Quentin C',r:'Chef de projet'},
+ {id:'audrey',n:'Audrey B',r:'Chef de projet'},
+ {id:'safae',n:'Safae',r:'Développement'},
+ {id:'amal',n:'Amal',r:'Développement'},
+ {id:'yassine',n:'Yassine',r:'Développement'},
+ {id:'abder',n:'Abder',r:'Développement'}
 ];
 const PRJ=[
- {id:'brandt',n:'Atelier mécanique Brandt',d:'Gestion d\'atelier',f:'Sur mesure+',cp:'Marc Dupuis',st:'En cours',s:0,e:11,due:9,p:35,sold:60,used:24,fc:68,
+ {id:'brandt',n:'Atelier mécanique Brandt',d:'Gestion d\'atelier',f:'Sur mesure+',cp:'Guillaume G',st:'En cours',s:0,e:11,due:9,p:35,sold:60,used:24,fc:68,
   ms:[[3,'Maquettes validées','ok'],[7,'Recette V1','late'],[9,'Mise en production','risk']],
-  tasks:[['Planning atelier','Youssef Amrani','En cours'],['Import ordres de réparation','Youssef Amrani','À faire'],['Tableau de bord accueil','Karim Benali','À faire'],['Droits par profil','Léa Martin','Fait']]},
- {id:'cuendet',n:'Domaine viticole Cuendet',d:'Suivi des vendanges',f:'Essentiel',cp:'Marc Dupuis',st:'En cours',s:0,e:4,due:4,p:70,sold:18,used:13,fc:18,
+  tasks:[['Planning atelier','Yassine','En cours'],['Import ordres de réparation','Yassine','À faire'],['Tableau de bord accueil','Abder','À faire'],['Droits par profil','Didi','Fait']]},
+ {id:'cuendet',n:'Domaine viticole Cuendet',d:'Suivi des vendanges',f:'Essentiel',cp:'Quentin C',st:'En cours',s:0,e:4,due:4,p:70,sold:18,used:13,fc:18,
   ms:[[2,'Recette','ok'],[4,'Livraison','ok']],
-  tasks:[['Saisie des parcelles','Salma Idrissi','Fait'],['Export cave','Salma Idrissi','En cours'],['Formation utilisateurs','Marc Dupuis','À faire']]},
- {id:'morel',n:'Fiduciaire Morel',d:'Mandats et échéances',f:'Pro',cp:'Marc Dupuis',st:'À démarrer',s:2,e:10,due:10,p:0,sold:42,used:0,fc:42,
+  tasks:[['Saisie des parcelles','Safae','Fait'],['Export cave','Safae','En cours'],['Formation utilisateurs','Guillaume G','À faire']]},
+ {id:'morel',n:'Fiduciaire Morel',d:'Mandats et échéances',f:'Pro',cp:'Audrey B',st:'À démarrer',s:2,e:10,due:10,p:0,sold:42,used:0,fc:42,
   ms:[[2,'Lancement','ok'],[6,'Recette V1','ok'],[10,'Mise en production','ok']],
-  tasks:[['Modèle de données mandats','Salma Idrissi','À faire'],['Import logiciel comptable','Nadia El Fassi','À faire']]},
- {id:'pittet',n:'Garage Pittet SA',d:'Réparations et stock',f:'Pro',cp:'Léa Martin',st:'À démarrer',s:3,e:11,due:10,p:0,sold:32,used:0,fc:36,
+  tasks:[['Modèle de données mandats','Safae','À faire'],['Import logiciel comptable','Amal','À faire']]},
+ {id:'pittet',n:'Garage Pittet SA',d:'Réparations et stock',f:'Pro',cp:'Didi',st:'À démarrer',s:3,e:11,due:10,p:0,sold:32,used:0,fc:36,
   ms:[[3,'Lancement','ok'],[10,'Mise en production','late']],
-  tasks:[['Suivi des réparations','Karim Benali','À faire'],['Stock pièces','Karim Benali','À faire']]},
- {id:'rochat',n:'Transports Rochat Sàrl',d:'Planning chauffeurs',f:'Pro',cp:'Léa Martin',st:'Prévisionnel',s:7,e:13,due:13,p:0,sold:30,used:0,fc:30,
+  tasks:[['Suivi des réparations','Abder','À faire'],['Stock pièces','Abder','À faire']]},
+ {id:'rochat',n:'Transports Rochat Sàrl',d:'Planning chauffeurs',f:'Pro',cp:'Quentin C',st:'Prévisionnel',s:7,e:13,due:13,p:0,sold:30,used:0,fc:30,
   ms:[[7,'Lancement si signature','ok']],tasks:[]},
- {id:'bo',n:'Back-office saimple.',d:'Interne · V1 à V4',f:'Interne',cp:'Léa Martin',st:'En cours',s:0,e:16,due:16,p:15,sold:0,used:6,fc:45,
+ {id:'bo',n:'Back-office saimple.',d:'Interne · V1 à V4',f:'Interne',cp:'Didi',st:'En cours',s:0,e:16,due:16,p:15,sold:0,used:6,fc:45,
   ms:[[3,'V1 Accueillir','ok'],[6,'V2 Suivre','ok'],[9,'V3 Encaisser','ok'],[15,'V4 Livrer','ok']],
-  tasks:[['Connexion Microsoft','Nadia El Fassi','En cours'],['Pipeline CRM','Youssef Amrani','En cours']]}
+  tasks:[['Connexion Microsoft','Amal','En cours'],['Pipeline CRM','Yassine','En cours']]}
 ];
 const ASG=[
- ['brandt','lea',0,11,20],['brandt','marc',0,11,30],['brandt','youssef',0,11,100],['brandt','karim',8,11,40],
- ['cuendet','lea',0,4,20],['cuendet','marc',0,4,20],['cuendet','salma',0,4,60],
- ['morel','lea',2,10,20],['morel','marc',2,10,30],['morel','salma',2,10,80],['morel','nadia',2,10,50],
- ['pittet','lea',3,11,30],['pittet','karim',3,11,100],
- ['rochat','lea',7,13,20],['rochat','salma',10,13,60],
- ['bo','lea',0,16,20],['bo','youssef',0,6,30],['bo','nadia',0,16,50]
+ ['brandt','didi',0,11,20],['brandt','guillaume',0,11,30],['brandt','yassine',0,11,100],['brandt','abder',8,11,40],
+ ['cuendet','quentin',0,4,20],['cuendet','safae',0,4,60],
+ ['morel','audrey',2,10,30],['morel','safae',2,10,80],['morel','amal',2,10,50],
+ ['pittet','didi',3,11,30],['pittet','abder',3,11,100],
+ ['rochat','quentin',7,13,20],['rochat','safae',10,13,60],
+ ['bo','didi',0,16,30],['bo','yassine',0,6,30],['bo','amal',0,16,50]
 ];
 function load(r,w){return ASG.filter(a=>a[1]===r&&w>=a[2]&&w<a[3]).reduce((t,a)=>t+a[4],0)}
 function resName(id){return RES.find(r=>r.id===id).n}
@@ -474,7 +476,7 @@ marketing(){
 },
 projets(){
  const f=S.pf, iss=issues();
- let list=S.role==='dev'?PRJ.filter(p=>ASG.some(a=>a[0]===p.id&&a[1]==='youssef')):PRJ;
+ let list=S.role==='dev'?PRJ.filter(p=>ASG.some(a=>a[0]===p.id&&a[1]==='yassine')):PRJ;
  list=list.filter(p=>(!f.st||p.st===f.st)&&(!f.cp||p.cp===f.cp)&&(!f.q||(p.n+' '+p.d).toLowerCase().includes(f.q.toLowerCase()))&&(!f.al||prjIssues(p.id).length));
  const X=w=>w/16*100;
  const nIss=k=>iss.filter(i=>i.cat===k).length;
@@ -503,7 +505,7 @@ ressources(){
  const rl=S.rf?RES.filter(r=>S.rf==='dev'?r.r.startsWith('Dév'):!r.r.startsWith('Dév')):RES;
  const cls=l=>l===0?'h0':l<=80?'h1':l<=100?'h2':'h3';
  return head('Activité par ressource','Charge planifiée par semaine, tous projets confondus','<button class="btn" data-go="projets">Portefeuille</button><button class="btn pri" data-act="affect">Nouvelle affectation</button>')+`
- <div class="filters"><select id="frf" aria-label="Rôle"><option value="">Toute l'équipe</option><option value="dev" ${S.rf==='dev'?'selected':''}>Développeurs</option><option value="lead" ${S.rf==='lead'?'selected':''}>Lead et chefs de projet</option></select>
+ <div class="filters"><select id="frf" aria-label="Rôle"><option value="">Toute l'équipe</option><option value="dev" ${S.rf==='dev'?'selected':''}>Développeurs</option><option value="lead" ${S.rf==='lead'?'selected':''}>Chefs de projet</option></select>
  <span class="bl" style="margin:0;flex-wrap:wrap"><span><i class="h1"></i>≤ 80 %</span><span><i class="h2"></i>81–100 %</span><span><i class="h3" style="outline-width:1px"></i>Surcharge &gt; 100 %</span></span></div>
  <div class="panel tw"><table class="heat"><thead><tr><th>Ressource</th>${WK.map((w,i)=>`<th>${w}<br><span style="font-weight:500">${WKD[i]}</span></th>`).join('')}<th>Moy.</th></tr></thead><tbody>
  ${rl.map(r=>{const ls=WK.map((_,w)=>load(r.id,w));const avg=Math.round(ls.reduce((a,b)=>a+b,0)/16);return `<tr><td class="nm">${r.n}<small>${r.r}</small></td>${ls.map((l,w)=>`<td class="c ${cls(l)}" data-cell="${r.id}|${w}" title="${r.n} · ${WK[w]} : ${l} %">${l||'·'}</td>`).join('')}<td class="${cls(avg)}">${avg}</td></tr>`}).join('')}
