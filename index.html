@@ -1313,8 +1313,7 @@ applyPal(savedPal);
     redline:  {name:"Redline",  parts:["","Red","line"]},
     redcraft: {name:"Redcraft", parts:["","Red","craft"]},
     redbuild: {name:"Redbuild", parts:["","Red","build"]},
-    redkit:   {name:"Redkit",   parts:["","Red","kit"]},
-    redshift: {name:"Redshift", parts:["","Red","shift"]}
+    redkit:   {name:"Redkit",   parts:["","Red","kit"]}
   };
   const sel = $("#brand"); if (!sel) return;
   sel.innerHTML = Object.entries(BRANDS).map(([k,b])=>'<option value="'+k+'">'+esc(b.name)+'</option>').join("");
