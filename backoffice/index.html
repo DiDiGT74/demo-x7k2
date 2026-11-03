@@ -34,7 +34,7 @@ button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible,te
 .num{font-variant-numeric:tabular-nums}
 .app{display:grid;grid-template-columns:232px 1fr;min-height:100%}
 aside{background:var(--surface);border-right:1px solid var(--line);padding-block:20px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:16px;display:flex;flex-direction:column;gap:20px;position:sticky;top:0;height:100vh;overflow:auto}
-.logo{font-family:var(--display);font-weight:700;font-size:26px;letter-spacing:-.02em}
+.logo{border:0;background:none;padding:0;text-align:left;cursor:pointer;color:var(--fg);font-family:var(--display);font-weight:700;font-size:26px;letter-spacing:-.02em}
 .logo b{color:var(--lagon);font-weight:700}
 .logo small{display:block;font-family:var(--body);font-weight:600;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
 nav{display:flex;flex-direction:column;gap:2px}
@@ -98,6 +98,16 @@ nav{gap:14px}
 .menu-open .burger span:nth-child(2){opacity:0}
 .menu-open .burger span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
 .menuscrim{position:fixed;inset:0;background:rgba(10,12,20,.35);z-index:14}
+
+.vip{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:800;letter-spacing:.04em;color:var(--warn);background:var(--warn-soft);border-radius:6px;padding:1px 7px}
+tr.isvip td:first-child{box-shadow:inset 3px 0 0 var(--warn)}
+.sla{font-size:11.5px;font-weight:700}
+.sla.hot{color:var(--crit)}
+.own select{background:var(--surface);border:1px solid var(--line);border-radius:7px;padding:4px 6px;color:var(--fg);font:inherit;font-size:12.5px}
+button.kpi{text-align:left;font:inherit;color:inherit;cursor:pointer;width:100%}
+button.kpi:hover{border-color:var(--lagon)}
+button.kpi[aria-pressed="true"]{border-color:var(--lagon);box-shadow:inset 0 0 0 1px var(--lagon);background:var(--lagon-soft)}
+.fchip{display:inline-flex;gap:6px;align-items:center;background:var(--lagon-soft);color:var(--lagon);border:0;border-radius:99px;padding:4px 10px;font-weight:700;font-size:12.5px}
 /* funnel */
 .fun{display:flex;flex-direction:column;gap:8px}
 .fr{display:grid;grid-template-columns:130px 1fr 42px;gap:10px;align-items:center;font-size:13px}
@@ -234,7 +244,7 @@ textarea{width:100%;min-height:90px;border:1px solid var(--line);border-radius:8
 <div class="app">
   <aside>
     <div class="brand">
-      <div class="logo">s<b>ai</b>mple.<small>Back-office</small></div>
+      <button class="logo" data-go="accueil" aria-label="saimple., retour à l'accueil">s<b>ai</b>mple.<small>Back-office</small></button>
       <button class="burger" id="burger" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="menu"><span></span><span></span><span></span></button>
     </div>
     <div class="menu" id="menu">
@@ -283,22 +293,23 @@ const MODS=[
 const STAGES=['Nouvelle demande','Prospect qualifié','Atelier réservé','Atelier réalisé','Devis envoyé','Signé'];
 const chf=n=>"CHF "+n.toLocaleString('fr-CH').replace(/ |\s/g,"'");
 
+const OWN=['Didi','Guillaume G','Quentin C','Audrey B'];
 let S={
- role:'admin',pf:{st:'',cp:'',q:'',al:false},rf:'',
+ role:'admin',df:{vip:false,own:''},pf:{st:'',cp:'',q:'',al:false,k:''},rf:'',
  demandes:[
-  {id:'D-0142',ent:'Menuiserie Favre SA',ct:'Julien Favre',act:'Menuiserie, 14 employés',src:'Google Ads',date:'03.11',st:'new',
+  {id:'D-0142',ent:'Menuiserie Favre SA',ct:'Julien Favre',act:'Menuiserie, 14 employés',src:'Google Ads',date:'03.11',st:'new',vip:true,why:'Groupe de 3 menuiseries : potentiel Sur mesure+',own:'Guillaume G',
    need:'Suivi des chantiers et des heures par menuisier',adj:'Ajouter une vue planning par semaine',
    struct:[['Chantiers',[['Client','texte'],['Adresse','texte'],['Début','date'],['Fin prévue','date'],['Statut','liste']]],['Heures',[['Date','date'],['Menuisier','texte'],['Chantier','lien'],['Heures','nombre']]]]},
-  {id:'D-0141',ent:'Cabinet dentaire du Lac',ct:'Dr Sophie Monnier',act:'Cabinet dentaire, 6 personnes',src:'LinkedIn',date:'02.11',st:'new',
+  {id:'D-0141',ent:'Cabinet dentaire du Lac',ct:'Dr Sophie Monnier',act:'Cabinet dentaire, 6 personnes',src:'LinkedIn',date:'02.11',st:'new',vip:false,why:'',own:'',
    need:'Gestion du stock de matériel et des commandes fournisseurs',adj:'Alerte quand un stock passe sous le seuil',
    struct:[['Stock',[['Article','texte'],['Fournisseur','texte'],['Quantité','nombre'],['Seuil','nombre']]],['Commandes',[['Date','date'],['Article','lien'],['Qté','nombre'],['Reçue','oui/non']]]]},
-  {id:'D-0140',ent:'Transports Rochat Sàrl',ct:'Marc Rochat',act:'Transport régional, 22 employés',src:'Fiduciaire Morel',date:'31.10',st:'conv',
+  {id:'D-0140',ent:'Transports Rochat Sàrl',ct:'Marc Rochat',act:'Transport régional, 22 employés',src:'Fiduciaire Morel',date:'31.10',st:'conv',vip:true,why:'Recommandé par un client (Fiduciaire Morel)',own:'Quentin C',
    need:'Planning des chauffeurs et des véhicules',adj:'Couleurs par type de véhicule',
    struct:[['Tournées',[['Date','date'],['Chauffeur','texte'],['Véhicule','texte'],['Départ','heure'],['Clients','texte']]],['Véhicules',[['Plaque','texte'],['Type','liste'],['Prochain service','date']]]]},
-  {id:'D-0139',ent:'Clinique vétérinaire des Alpes',ct:'Laura Berset',act:'Clinique vétérinaire, 9 personnes',src:'Site (organique)',date:'29.10',st:'conv',
+  {id:'D-0139',ent:'Clinique vétérinaire des Alpes',ct:'Laura Berset',act:'Clinique vétérinaire, 9 personnes',src:'Site (organique)',date:'29.10',st:'conv',vip:false,why:'',own:'Audrey B',
    need:'Suivi des vaccins et rappels clients',adj:'Envoi des rappels par SMS',
    struct:[['Animaux',[['Nom','texte'],['Espèce','liste'],['Propriétaire','texte'],['Dernier vaccin','date']]]]},
-  {id:'D-0138',ent:'Boulangerie Jaquier',ct:'Anne Jaquier',act:'Boulangerie, 3 points de vente',src:'Instagram',date:'27.10',st:'arch',
+  {id:'D-0138',ent:'Boulangerie Jaquier',ct:'Anne Jaquier',act:'Boulangerie, 3 points de vente',src:'Instagram',date:'27.10',st:'arch',vip:false,why:'',own:'',
    need:'Commandes des points de vente',adj:'—',
    struct:[['Commandes',[['Magasin','liste'],['Produit','texte'],['Quantité','nombre'],['Jour','date']]]]}
  ],
@@ -447,6 +458,7 @@ accueil(){
  <div class="grid g2" style="margin-top:16px">
   <div class="panel"><h2>Prochains rendez-vous</h2><div class="list">${S.rdv.slice(0,4).map(r=>`<div class="li"><span class="date">${r.d}<br>${r.h}</span><div class="grow"><div class="ttl">${r.ent}</div><div class="meta">${r.t} · ${r.type}</div></div></div>`).join('')}</div></div>
   <div class="panel"><h2>À traiter</h2><div class="list">
+   <div class="li"><span class="vip">★ 1</span><div class="grow">Demande VIP à rappeler sous 4 h : Menuiserie Favre SA</div>${allowed('demandes')?'<button class="btn sm" data-dem="D-0142">Ouvrir</button>':''}</div>
    <div class="li"><span class="pill p-new">2</span><div class="grow">Nouvelles demandes du site</div>${allowed('demandes')?'<button class="btn sm" data-go="demandes">Voir</button>':''}</div>
    <div class="li"><span class="pill p-warn">2</span><div class="grow">Posts à valider</div><button class="btn sm" data-go="marketing">Valider</button></div>
    <div class="li"><span class="pill p-crit">${late.length}</span><div class="grow">Paiement en retard : ${late.map(l=>l.ent).join(', ')}</div><button class="btn sm" data-go="finance">Voir</button></div>
@@ -455,11 +467,22 @@ accueil(){
  </div>`;
 },
 demandes(){
+ const f=S.df;
+ let L=[...S.demandes].sort((a,b)=>(b.vip-a.vip)||(a.st==='new'?-1:1)-(b.st==='new'?-1:1));
+ L=L.filter(d=>(!f.vip||d.vip)&&(!f.own||(f.own==='-'?!d.own:d.own===f.own)));
+ const sla=d=>d.st!=='new'?'':d.vip?'<span class="sla hot">Rappel sous 4 h</span>':'<span class="sla meta">Sous 48 h</span>';
+ const canAssign=['admin','commercial'].includes(S.role);
  return head('Demandes','Reçues depuis le site saimple. et le simulateur')+`
- <div class="panel tw"><table><thead><tr><th>N°</th><th>Entreprise</th><th>Besoin</th><th>Source</th><th>Reçue</th><th>Statut</th></tr></thead><tbody>
- ${S.demandes.map(d=>`<tr class="click" data-dem="${d.id}"><td class="num">${d.id}</td><td><div class="ttl">${d.ent}</div><div class="meta">${d.act}</div></td><td>${d.need}</td><td><span class="chip">${d.src}</span></td><td class="num">${d.date}</td><td>${stPill[d.st]}</td></tr>`).join('')}
+ <div class="filters">
+  <label><input type="checkbox" id="dvip" ${f.vip?'checked':''}> VIP uniquement</label>
+  <select id="down" aria-label="Attribuée à"><option value="">Toutes les attributions</option><option value="-" ${f.own==='-'?'selected':''}>Non attribuées</option>${OWN.map(o=>`<option ${f.own===o?'selected':''}>${o}</option>`).join('')}</select>
+  <span class="meta num">${L.length} demande${L.length>1?'s':''} · ${S.demandes.filter(d=>d.vip&&d.st==='new').length} VIP à traiter</span>
+ </div>
+ <div class="panel tw"><table><thead><tr><th>N°</th><th>Entreprise</th><th>Besoin</th><th>Source</th><th>Attribuée à</th><th>Délai</th><th>Statut</th></tr></thead><tbody>
+ ${L.map(d=>`<tr class="click ${d.vip?'isvip':''}" data-dem="${d.id}"><td class="num">${d.id}</td><td><div class="ttl">${d.vip?'<span class="vip">★ VIP</span> ':''}${d.ent}</div><div class="meta">${d.act}</div></td><td>${d.need}</td><td><span class="chip">${d.src}</span></td><td class="own">${canAssign?`<select data-own="${d.id}" aria-label="Attribuer ${d.ent}"><option value="">Non attribuée</option>${OWN.map(o=>`<option ${d.own===o?'selected':''}>${o}</option>`).join('')}</select>`:(d.own||'<span class="meta">Non attribuée</span>')}</td><td>${sla(d)}</td><td>${stPill[d.st]}</td></tr>`).join('')||'<tr><td colspan="7" class="meta">Aucune demande pour ces filtres.</td></tr>'}
  </tbody></table></div>
- <p class="note" style="margin-top:12px">Le fichier Excel du visiteur ne quitte jamais son navigateur : seule sa structure (onglets, colonnes, types) arrive ici.</p>`;
+ <p class="note" style="margin-top:12px">Règle VIP : la demande remonte en tête, est attribuée au chef de projet référent et doit être rappelée sous 4 h ouvrées. Les autres demandes sont traitées sous 48 h.</p>
+ <p class="note">Le fichier Excel du visiteur ne quitte jamais son navigateur : seule sa structure (onglets, colonnes, types) arrive ici.</p>`;
 },
 crm(){
  const total=s=>S.deals.filter(d=>d.st===s).reduce((a,d)=>a+d.m,0);
@@ -507,21 +530,22 @@ marketing(){
 projets(){
  const f=S.pf, iss=issues();
  let list=S.role==='dev'?PRJ.filter(p=>ASG.some(a=>a[0]===p.id&&a[1]==='yassine')):PRJ;
- list=list.filter(p=>(!f.st||p.st===f.st)&&(!f.cp||p.cp===f.cp)&&(!f.q||(p.n+' '+p.d).toLowerCase().includes(f.q.toLowerCase()))&&(!f.al||prjIssues(p.id).length));
+ list=list.filter(p=>(!f.st||p.st===f.st)&&(!f.cp||p.cp===f.cp)&&(!f.q||(p.n+' '+p.d).toLowerCase().includes(f.q.toLowerCase()))&&(!f.al||prjIssues(p.id).length)&&(!f.k||(f.k==='run'?p.st==='En cours':f.k==='plan'?p.e>p.due:f.k==='bud'?(p.sold&&p.fc>p.sold):prjIssues(p.id).some(i=>i.cat==='Surcharge'))));
  const X=w=>w/16*100;
  const nIss=k=>iss.filter(i=>i.cat===k).length;
  return head('Projets','Portefeuille · S45 2026 à S07 2027','<button class="btn" data-go="ressources">Ressources</button>')+`
  <div class="grid g4" style="margin-bottom:16px">
-  <div class="panel kpi"><div class="l">Projets en cours</div><div class="v num">${PRJ.filter(p=>p.st==='En cours').length}</div><div class="d">${PRJ.filter(p=>p.st==='À démarrer').length} à démarrer, ${PRJ.filter(p=>p.st==='Prévisionnel').length} prévisionnel</div></div>
-  <div class="panel kpi"><div class="l">Dépassements de planning</div><div class="v num">${nIss('Planning')}</div><div class="d down">échéance contractuelle menacée</div></div>
-  <div class="panel kpi"><div class="l">Dépassements de budget</div><div class="v num">${nIss('Budget')}</div><div class="d down">${PRJ.filter(p=>p.sold&&p.fc>p.sold).reduce((t,p)=>t+p.fc-p.sold,0)} j au-delà du vendu</div></div>
-  <div class="panel kpi"><div class="l">Ressources en surcharge</div><div class="v num">${new Set(overloads().map(o=>o.r.id)).size} / ${RES.length}</div><div class="d down">au moins une semaine &gt; 100 %</div></div>
+  <button class="panel kpi" data-pk="run" aria-pressed="${f.k==='run'}"><div class="l">Projets en cours</div><div class="v num">${PRJ.filter(p=>p.st==='En cours').length}</div><div class="d">${PRJ.filter(p=>p.st==='À démarrer').length} à démarrer, ${PRJ.filter(p=>p.st==='Prévisionnel').length} prévisionnel</div></button>
+  <button class="panel kpi" data-pk="plan" aria-pressed="${f.k==='plan'}"><div class="l">Dépassements de planning</div><div class="v num">${nIss('Planning')}</div><div class="d down">échéance contractuelle menacée</div></button>
+  <button class="panel kpi" data-pk="bud" aria-pressed="${f.k==='bud'}"><div class="l">Dépassements de budget</div><div class="v num">${nIss('Budget')}</div><div class="d down">${PRJ.filter(p=>p.sold&&p.fc>p.sold).reduce((t,p)=>t+p.fc-p.sold,0)} j au-delà du vendu</div></button>
+  <button class="panel kpi" data-pk="sur" aria-pressed="${f.k==='sur'}"><div class="l">Projets avec ressource en surcharge</div><div class="v num">${PRJ.filter(p=>prjIssues(p.id).some(i=>i.cat==='Surcharge')).length}</div><div class="d down">${new Set(overloads().map(o=>o.r.id)).size} personnes au-delà de 100 %</div></button>
  </div>
  <div class="filters">
   <input type="search" id="fq" placeholder="Rechercher un projet" value="${f.q}" aria-label="Rechercher un projet">
   <select id="fst" aria-label="Statut"><option value="">Tous les statuts</option>${['En cours','À démarrer','Prévisionnel'].map(v=>`<option ${f.st===v?'selected':''}>${v}</option>`).join('')}</select>
   <select id="fcp" aria-label="Chef de projet"><option value="">Tous les chefs de projet</option>${[...new Set(PRJ.map(p=>p.cp))].map(v=>`<option ${f.cp===v?'selected':''}>${v}</option>`).join('')}</select>
   <label><input type="checkbox" id="fal" ${f.al?'checked':''}> Avec alertes seulement</label>
+  ${f.k?`<button class="fchip" data-pk="">${{run:'En cours',plan:'Dépassement de planning',bud:'Dépassement de budget',sur:'Ressource en surcharge'}[f.k]} ✕</button>`:''}
   <span class="meta num">${list.length} projet${list.length>1?'s':''}</span>
  </div>
  <div class="panel tw"><div class="gantt">
@@ -564,12 +588,12 @@ indicateurs(){
 
 function demDrawer(id){
  const d=S.demandes.find(x=>x.id===id);
- drawer(`<div class="dh"><div><div class="meta num">${d.id} · reçue le ${d.date}</div><h1 style="font-size:20px">${d.ent}</h1></div><button class="x" data-close aria-label="Fermer">×</button></div>
- <dl class="kv"><dt>Contact</dt><dd>${d.ct}</dd><dt>Activité</dt><dd>${d.act}</dd><dt>Besoin exprimé</dt><dd>${d.need}</dd><dt>Ajustement demandé</dt><dd>${d.adj}</dd><dt>Source</dt><dd>${d.src}</dd></dl>
+ drawer(`<div class="dh"><div><div class="meta num">${d.id} · reçue le ${d.date}</div><h1 style="font-size:20px">${d.vip?'<span class="vip">★ VIP</span> ':''}${d.ent}</h1></div><button class="x" data-close aria-label="Fermer">×</button></div>
+ <dl class="kv"><dt>Contact</dt><dd>${d.ct}</dd><dt>Activité</dt><dd>${d.act}</dd><dt>Besoin exprimé</dt><dd>${d.need}</dd><dt>Ajustement demandé</dt><dd>${d.adj}</dd><dt>Source</dt><dd>${d.src}</dd><dt>Attribuée à</dt><dd class="own"><select data-own="${d.id}" aria-label="Attribuer"><option value="">Non attribuée</option>${OWN.map(o=>`<option ${d.own===o?'selected':''}>${o}</option>`).join('')}</select></dd>${d.vip?`<dt>Pourquoi VIP</dt><dd>${d.why||'—'}</dd><dt>Délai</dt><dd class="sla hot">Rappel sous 4 h ouvrées</dd>`:''}</dl>
  <div><h2>Structure du fichier Excel</h2><div class="struct">${d.struct.map(o=>`<b>▸ ${o[0]}</b><br>${o[1].map(c=>`&nbsp;&nbsp;${c[0]} <i>· ${c[1]}</i>`).join('<br>')}`).join('<br>')}</div>
  <p class="note" style="margin-top:8px">Aucune donnée du fichier n'est stockée. L'aperçu vu par le prospect a été rempli dans son navigateur.</p></div>
  <div><h2>Aperçu généré</h2><div class="struct">App « ${d.need.split(' ').slice(0,4).join(' ')}… » · 6 menus · palette du logo client</div></div>
- <div class="acts">${d.st==='new'?`<button class="btn pri" data-conv="${d.id}">Convertir en prospect</button><button class="btn" data-arch="${d.id}">Archiver</button>`:''}<button class="btn" data-act="mail">Répondre par mail</button></div>`);
+ <div class="acts">${d.st==='new'?`<button class="btn pri" data-conv="${d.id}">Convertir en prospect</button><button class="btn" data-arch="${d.id}">Archiver</button>`:''}<button class="btn" data-vip="${d.id}">${d.vip?'Retirer le statut VIP':'Marquer VIP'}</button><button class="btn" data-act="mail">Répondre par mail</button></div>`);
 }
 
 function prjDrawer(id){
@@ -611,10 +635,13 @@ function dealDrawer(id){
 }
 
 document.addEventListener('click',e=>{
- const t=e.target.closest('[data-prj],[data-cell],[data-go],[data-dem],[data-deal],[data-close],[data-conv],[data-arch],[data-adv],[data-fit],[data-val],[data-regen],[data-ch],[data-act]');
+ const t=e.target.closest('[data-pk],[data-vip],[data-prj],[data-cell],[data-go],[data-dem],[data-deal],[data-close],[data-conv],[data-arch],[data-adv],[data-fit],[data-val],[data-regen],[data-ch],[data-act]');
  if(!t)return;
+ if(e.target.closest('select'))return;
  const ds=t.dataset;
- if(ds.prj)prjDrawer(ds.prj);
+ if(ds.pk!==undefined){S.pf.k=S.pf.k===ds.pk?'':ds.pk;render()}
+ else if(ds.vip){const d=S.demandes.find(x=>x.id===ds.vip);d.vip=!d.vip;if(d.vip&&!d.why)d.why='Marqué manuellement';render();demDrawer(d.id);toast(d.vip?'Marquée VIP : rappel sous 4 h':'Statut VIP retiré')}
+ else if(ds.prj)prjDrawer(ds.prj);
  else if(ds.cell){const [r,w]=ds.cell.split('|');cellDrawer(r,w)}
  else if(ds.go!==undefined){closeD();menu(false);go(ds.go)}
  else if(ds.dem)demDrawer(ds.dem);
@@ -631,7 +658,7 @@ document.addEventListener('click',e=>{
 });
 
 document.addEventListener('input',e=>{if(e.target.id==='fq'){S.pf.q=e.target.value;const pos=e.target.selectionStart;render();const q=document.getElementById('fq');q.focus();q.setSelectionRange(pos,pos)}});
-document.addEventListener('change',e=>{const id=e.target.id;if(id==='fst'){S.pf.st=e.target.value;render()}else if(id==='fcp'){S.pf.cp=e.target.value;render()}else if(id==='fal'){S.pf.al=e.target.checked;render()}else if(id==='frf'){S.rf=e.target.value;render()}});
+document.addEventListener('change',e=>{const id=e.target.id;if(id==='fst'){S.pf.st=e.target.value;render()}else if(id==='fcp'){S.pf.cp=e.target.value;render()}else if(id==='fal'){S.pf.al=e.target.checked;render()}else if(id==='frf'){S.rf=e.target.value;render()}else if(id==='dvip'){S.df.vip=e.target.checked;render()}else if(id==='down'){S.df.own=e.target.value;render()}else if(e.target.dataset.own){const d=S.demandes.find(x=>x.id===e.target.dataset.own);d.own=e.target.value;const op=!!layer.innerHTML;render();if(op)demDrawer(d.id);toast(d.own?'Attribuée à '+d.own:'Attribution retirée')}});
 document.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.matches('.gr[data-prj]')){e.preventDefault();prjDrawer(e.target.dataset.prj)}});
 document.getElementById('burger').addEventListener('click',()=>menu(!document.body.classList.contains('menu-open')));
 document.getElementById('menuscrim').addEventListener('click',()=>menu(false));
