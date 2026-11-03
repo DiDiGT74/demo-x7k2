@@ -26,6 +26,7 @@
   --lagon:#3cc2bb; --lagon-soft:#173a3a; --lilas:#a796ec; --lilas-soft:#2b2647;
   --good:#5cc082; --good-soft:#1c3526; --warn:#e2a64b; --warn-soft:#3a2e17; --crit:#ec7a71; --crit-soft:#402220; color-scheme:dark}
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 html,body{height:100%}
 body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:14px;line-height:1.5}
 button{font:inherit;color:inherit;cursor:pointer}
@@ -171,7 +172,7 @@ textarea{width:100%;min-height:90px;border:1px solid var(--line);border-radius:8
   <form id="gf" class="panel" style="width:min(360px,100%);display:flex;flex-direction:column;gap:12px">
     <div class="logo">s<b>ai</b>mple.<small>Back-office · démo</small></div>
     <label for="gl" class="meta">Identifiant</label><input id="gl" autocomplete="username" style="border:1px solid var(--line);border-radius:8px;padding:9px;background:var(--sunk);color:var(--fg)">
-    <label for="gp" class="meta">Mot de passe</label><input id="gp" type="password" autocomplete="current-password" style="border:1px solid var(--line);border-radius:8px;padding:9px;background:var(--sunk);color:var(--fg)">
+    <label for="gp" class="meta">Mot de passe</label><div style="display:flex;gap:6px"><input id="gp" type="password" autocomplete="current-password" style="flex:1;min-width:0;border:1px solid var(--line);border-radius:8px;padding:9px;background:var(--sunk);color:var(--fg)"><button type="button" id="gs" class="btn" aria-pressed="false">Afficher</button></div>
     <p id="ge" class="meta" style="color:var(--crit);margin:0" hidden>Identifiant ou mot de passe incorrect.</p>
     <button class="btn pri" type="submit">Se connecter</button>
   </form>
@@ -464,9 +465,10 @@ document.getElementById('role').addEventListener('change',e=>{S.role=e.target.va
 window.addEventListener('hashchange',()=>go(location.hash.slice(1)));
 go(location.hash.slice(1)||'accueil');
 (function(){const g=document.getElementById('gate');let ok=false;try{ok=sessionStorage.getItem('sb-ok')==='1'}catch(_){}
- if(ok){g.hidden=true;return}
+ if(ok){g.remove();return}
+ document.getElementById('gs').addEventListener('click',e=>{const p=document.getElementById('gp'),v=p.type==='password';p.type=v?'text':'password';e.target.textContent=v?'Masquer':'Afficher';e.target.setAttribute('aria-pressed',v)});
  document.getElementById('gf').addEventListener('submit',e=>{e.preventDefault();
-  if(document.getElementById('gl').value.trim()==='liacestbien'&&document.getElementById('gp').value==='liacestmal'){g.hidden=true;try{sessionStorage.setItem('sb-ok','1')}catch(_){}}
+  if(document.getElementById('gl').value.trim().toLowerCase()==='liacestbien'&&document.getElementById('gp').value.trim()==='liacestmal'){g.remove();try{sessionStorage.setItem('sb-ok','1')}catch(_){}}
   else document.getElementById('ge').hidden=false});})();
 </script>
 
