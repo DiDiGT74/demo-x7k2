@@ -297,7 +297,7 @@ const chf=n=>"CHF "+n.toLocaleString('fr-CH').replace(/ |\s/g,"'");
 
 const OWN=['Didi','Guillaume G','Quentin C','Audrey B'];
 let S={
- role:'admin',df:{vip:false,own:''},pf:{st:'',cp:'',q:'',al:false,k:''},rf:'',
+ role:'admin',mt:'pub',df:{vip:false,own:''},pf:{st:'',cp:'',q:'',al:false,k:''},rf:'',
  demandes:[
   {id:'D-0142',ent:'Menuiserie Favre SA',ct:'Julien Favre',act:'Menuiserie, 14 employés',src:'Google Ads',date:'03.11',st:'new',vip:true,why:'Groupe de 3 menuiseries : potentiel Sur mesure+',own:'Guillaume G',
    need:'Suivi des chantiers et des heures par menuisier',adj:'Ajouter une vue planning par semaine',
@@ -451,6 +451,7 @@ function navRender(){
 function menu(open){document.body.classList.toggle('menu-open',open);document.getElementById('burger').setAttribute('aria-expanded',open);document.getElementById('burger').setAttribute('aria-label',open?'Fermer le menu':'Ouvrir le menu');document.getElementById('menuscrim').hidden=!open}
 function go(id){if(!MODS.find(m=>m.id===id))id='accueil';if(!allowed(id))id='accueil';cur=id;if(location.hash!=='#'+id)history.replaceState(null,'','#'+id);render()}
 function render(){navRender();mainEl.innerHTML=V[cur]();window.scrollTo(0,0)}
+function mtabs(){return `<div class="tabs" role="tablist" style="margin-bottom:16px"><button role="tab" aria-selected="${S.mt==='pub'}" data-mt="pub">Publications</button><button role="tab" aria-selected="${S.mt==='plan'}" data-mt="plan">Plan</button></div>`}
 function head(t,s,act=''){return `<div class="top"><div><h1>${t}</h1><p class="sub">${s}</p></div><div class="acts">${act}</div></div>`}
 function toast(t){const e=document.createElement('div');e.className='toast';e.textContent=t;document.body.appendChild(e);setTimeout(()=>e.remove(),2400)}
 function closeD(){layer.innerHTML=''}
@@ -557,7 +558,49 @@ finance(){
 },
 marketing(){
  const canVal=['admin'].includes(S.role);
- return head('Marketing','Posts générés par l\'IA, à valider avant publication','<button class="btn pri" data-act="idea">Nouvelle idée</button>')+`
+ if(S.mt==='plan'){
+  const T=(h,rows)=>`<div class="tw"><table><thead><tr>${h.map(x=>`<th>${x}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map((c,i)=>`<td class="${i===0?'ttl':''}">${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+  return head('Marketing','Plan marketing de lancement · montants indicatifs HT en CHF')+mtabs()+`
+  <div class="panel"><h2>En bref</h2><p style="margin:0">Un lancement solide coûte environ <b>CHF 1'500 à 2'500 par mois pendant 3 mois</b>, plus CHF 1'000 à 2'000 de mise en place, et 6 à 10 h de temps interne par semaine. On garde un canal tant qu'un Atelier Express réservé coûte moins de CHF 500.</p></div>
+  <div class="panel" style="margin-top:16px"><h2>Scénarios de budget</h2>${T(['Scénario','Mise en place','Mensuel','Contenu'],[
+   ['Minimum','100–300','30–100','SEO, fiche Google, LinkedIn organique, vidéos IA, prescripteurs, webinaire'],
+   ['<span class="pill p-info">Recommandé</span> Test 3 mois','1\'000–2\'000','1\'500–2\'500','Minimum + Google Ads 800–1\'200 + boosts LinkedIn/Insta 300–500 + 1 événement CCI'],
+   ['Accéléré','3\'000–6\'000','4\'000–7\'000','Recommandé + LinkedIn Ads + agence Ads + stand sur un salon']])}</div>
+  <div class="grid g2" style="margin-top:16px">
+   <div class="panel"><h2>Canaux en ligne</h2>${T(['Canal','Coût mensuel','Délai'],[
+    ['Site saimple.ch indexé','0–25 (+ domaine 30–60/an)','Prérequis'],
+    ['SEO (1–2 articles/mois)','0','3–6 mois'],
+    ['Fiche Google Business','0','1–2 mois'],
+    ['Google Ads','800–1\'200 (clic 3–10)','1–2 semaines'],
+    ['LinkedIn organique','0','1–3 mois'],
+    ['LinkedIn Ads','dès ~1\'000 (clic 4–8)','2–4 semaines'],
+    ['Vidéos IA (LinkedIn, Insta, YouTube)','30–100 d\'outils','Continu'],
+    ['Boosts Insta / LinkedIn','150–500','Immédiat'],
+    ['Newsletter','0–30','2–3 mois'],
+    ['Webinaire trimestriel','0–20','Par session']])}</div>
+   <div class="panel"><h2>Canaux hors ligne et réseau</h2>${T(['Canal','Coût'],[
+    ['Prescripteurs (fiduciaires, comptables)','Commission 300–1\'000 par projet signé'],
+    ['RedApporteur (interne)','500 par projet signé'],
+    ['Événements CCI / réseaux (GE, VD, FR)','0–150 par soirée'],
+    ['Salon, petit stand ou forfait startup','~1\'250–3\'700'],
+    ['Presse éco (communiqué)','0 ; annonce locale 200–800'],
+    ['Supports imprimés','300–800 une fois']])}
+    <p class="note" style="margin-top:10px">Influenceurs : 200–2'000 par post, retour incertain en B2B. On privilégie les prescripteurs.</p></div>
+  </div>
+  <div class="grid g2" style="margin-top:16px">
+   <div class="panel"><h2>Calendrier sur 3 mois</h2><div class="list">
+    ${[['S1–S2','Fondations','Domaine, site indexé, Search Console, fiche Google, page LinkedIn, contact@saimple.ch'],
+       ['S3–S4','Contenu','8 vidéos IA, 2 articles, calendrier LinkedIn de 8 semaines'],
+       ['Mois 2','Payant','Google Ads, boosts des meilleures vidéos, premières fiduciaires'],
+       ['Mois 3','Réseau','Premier webinaire, 1–2 événements CCI, communiqué de presse'],
+       ['Fin M3','Bilan','Coût par Atelier par canal : on coupe ou on accélère']].map(r=>`<div class="li" style="align-items:flex-start"><span class="date">${r[0]}</span><div class="grow"><div class="ttl">${r[1]}</div><div class="meta">${r[2]}</div></div></div>`).join('')}
+   </div></div>
+   <div class="panel"><h2>Indicateurs suivis</h2><div class="list">
+    ${['Visites du site','Simulations lancées','Ateliers Express réservés','Ateliers signés','Coût par Atelier, par canal'].map(x=>`<div class="li"><span class="chip">KPI</span><div class="grow">${x}</div></div>`).join('')}
+   </div><button class="btn" data-go="indicateurs" style="margin-top:12px">Voir les indicateurs</button></div>
+  </div>`;
+ }
+ return head('Marketing','Posts générés par l\'IA, à valider avant publication','<button class="btn pri" data-act="idea">Nouvelle idée</button>')+mtabs()+`
  <div class="grid g2">
   <div style="display:flex;flex-direction:column;gap:14px">${S.posts.filter(p=>p.st!=='pub').map(p=>`<div class="post">
    <div class="row" style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap"><span class="ttl">${p.idea}</span><span class="pill ${p.st==='ok'?'p-ok':'p-warn'}">${p.st==='ok'?'Validé · dans Buffer':'À valider'}</span></div>
@@ -695,11 +738,12 @@ function dealDrawer(id){
 }
 
 document.addEventListener('click',e=>{
- const t=e.target.closest('[data-reco],[data-rrdv],[data-rcrm],[data-rpay],[data-rno],[data-pk],[data-vip],[data-prj],[data-cell],[data-go],[data-dem],[data-deal],[data-close],[data-conv],[data-arch],[data-adv],[data-fit],[data-val],[data-regen],[data-ch],[data-act]');
+ const t=e.target.closest('[data-mt],[data-reco],[data-rrdv],[data-rcrm],[data-rpay],[data-rno],[data-pk],[data-vip],[data-prj],[data-cell],[data-go],[data-dem],[data-deal],[data-close],[data-conv],[data-arch],[data-adv],[data-fit],[data-val],[data-regen],[data-ch],[data-act]');
  if(!t)return;
  if(e.target.closest('select'))return;
  const ds=t.dataset;
- if(ds.reco)recoDrawer(ds.reco);
+ if(ds.mt){S.mt=ds.mt;render()}
+ else if(ds.reco)recoDrawer(ds.reco);
  else if(ds.rrdv){const r=S.recos.find(x=>x.id===ds.rrdv);r.st='RDV planifié';const d=addDeal(r,1);if(d.st<1)d.st=1;S.rdv.push({d:'Mar 11.11',h:'14:00',ent:r.ent,t:'Premier rendez-vous',type:'Teams',who:'Commercial',ref:r.app});render();recoDrawer(r.id);toast('RDV planifié le 11.11 et ajouté à l\'agenda')}
  else if(ds.rcrm){const r=S.recos.find(x=>x.id===ds.rcrm);addDeal(r,0);render();recoDrawer(r.id);toast('Contact créé dans le CRM')}
  else if(ds.rpay){const r=S.recos.find(x=>x.id===ds.rpay);r.prime='Versée';render();recoDrawer(r.id);toast('Prime de CHF 500 marquée versée')}
