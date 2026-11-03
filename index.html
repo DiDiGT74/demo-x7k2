@@ -63,7 +63,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .fab{position:fixed;z-index:30;right:max(16px, env(safe-area-inset-right, 0px));bottom:calc(16px + env(safe-area-inset-bottom, 0px));box-shadow:0 14px 30px -10px rgba(0,0,0,.45)}
 @media (min-width:821px){.fab{display:none}}
 .pal{font:500 13px var(--f-body);color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:8px 10px;max-width:170px;cursor:pointer}
-@media (max-width:480px){.pal{max-width:96px}.top .wm{font-size:24px}}
+@media (max-width:480px){.pal{max-width:82px;padding:8px 6px}.top .wm{font-size:22px}.top-right{gap:6px}}
 
 /* hero */
 .hero{padding-block:72px 40px}
@@ -483,11 +483,11 @@ html.locked #gate{display:grid;min-height:100vh;place-items:center;padding:24px 
 .gbox .err-line{min-height:18px}
 </style>
 <script>(function(){if(window.claude)return;var ok=false;try{ok=localStorage.getItem("saimple-ok")==="28352e44"}catch(e){}if(!ok)document.documentElement.classList.add("locked")})();</script>
-<div id="gate" role="dialog" aria-label="Accès réservé"><form class="gbox" id="gateForm"><div class="wm">s<span class="ai">ai</span>mple<span class="dot">.</span></div><p>Démonstration privée. Saisissez le code d'accès que l'on vous a transmis.</p><label class="sr" for="gateCode">Code d'accès</label><input id="gateCode" type="password" autocomplete="off" placeholder="Code d'accès"><span class="err-line" id="gateErr"></span><button class="btn btn-primary" type="submit" style="justify-content:center">Entrer</button></form></div>
+<div id="gate" role="dialog" aria-label="Accès réservé"><form class="gbox" id="gateForm"><div class="wm" data-brand-mark>s<span class="ai">ai</span>mple<span class="dot">.</span></div><p>Démonstration privée. Saisissez le code d'accès que l'on vous a transmis.</p><label class="sr" for="gateCode">Code d'accès</label><input id="gateCode" type="password" autocomplete="off" placeholder="Code d'accès"><span class="err-line" id="gateErr"></span><button class="btn btn-primary" type="submit" style="justify-content:center">Entrer</button></form></div>
 
 <header class="top">
   <div class="wrap">
-    <a href="#top" class="wm" id="homeLink" aria-label="saimple, accueil">s<span class="ai">ai</span>mple<span class="dot">.</span></a>
+    <a href="#top" class="wm" id="homeLink" data-brand-mark aria-label="saimple, accueil">s<span class="ai">ai</span>mple<span class="dot">.</span></a>
     <nav aria-label="Navigation principale">
       <a href="#apercu">Simuler votre app</a><a href="#methode">Méthode</a><a href="#formules">Formules</a><a href="#dsi">Vous avez une DSI ?</a>
     </nav>
@@ -496,6 +496,8 @@ html.locked #gate{display:grid;min-height:100vh;place-items:center;padding:24px 
       <a class="btn btn-ghost btn-sm hide-sm" href="#atelier">Atelier Express</a>
       <label class="sr" for="pal">Couleurs du site</label>
       <select class="pal" id="pal" title="Couleurs du site"></select>
+      <label class="sr" for="brand">Nom de la marque</label>
+      <select class="pal" id="brand" title="Nom de la marque"></select>
     </div>
   </div>
 </header>
@@ -505,7 +507,7 @@ html.locked #gate{display:grid;min-height:100vh;place-items:center;padding:24px 
 <section class="story" id="story" aria-label="Votre Excel devient une application">
   <div class="sstage" id="stage">
     <div class="aurora" id="aurora"></div>
-    <div class="bigword" id="bigword" aria-hidden="true">s<span class="ai">ai</span>mple<span class="dot">.</span></div>
+    <div class="bigword" id="bigword" data-brand-mark aria-hidden="true">s<span class="ai">ai</span>mple<span class="dot">.</span></div>
     <p class="m-tag">Votre Excel devient une <span>vraie app.</span></p>
     <div class="reveal" id="reveal"><h2>Propulsé par l'IA<sup>*</sup></h2><p><b>*</b>et piloté par des ingénieurs. Chaque ligne de code est relue.</p></div>
     <div class="side l" aria-live="polite">
@@ -563,12 +565,12 @@ html.locked #gate{display:grid;min-height:100vh;place-items:center;padding:24px 
       <p class="lead">Notre assistant vous pose trois questions et dessine un premier aperçu de l'application qui remplacera votre Excel, avec vos propres données.</p>
     </div>
     <div class="trust" role="note">
-      <div><b>Vos données restent chez vous.</b> Votre fichier est lu dans votre navigateur, et votre simulation y est conservée pour votre prochaine visite (le bouton Réinitialiser efface tout). saimple. ne stocke rien sur ses serveurs et ne partage rien. Seule la structure du fichier (noms de colonnes, types, quelques valeurs de catégories) et la capture éventuelle sont transmises à l'IA, le temps de générer l'aperçu.</div>
+      <div><b>Vos données restent chez vous.</b> Votre fichier est lu dans votre navigateur, et votre simulation y est conservée pour votre prochaine visite (le bouton Réinitialiser efface tout). <span data-brand>saimple.</span> ne stocke rien sur ses serveurs et ne partage rien. Seule la structure du fichier (noms de colonnes, types, quelques valeurs de catégories) et la capture éventuelle sont transmises à l'IA, le temps de générer l'aperçu.</div>
       <div><b>Restez prudents malgré tout.</b> N'y mettez pas de données sensibles : données personnelles de clients ou de collaborateurs, salaires, santé, mots de passe. Utilisez une copie anonymisée ou notre exemple.</div>
     </div>
     <div class="agent">
       <div class="chat">
-        <div class="chat-head"><div class="avatar">s</div><div style="flex:1;min-width:0"><b>L'assistant saimple.</b><small>Répond en quelques secondes</small></div><button type="button" class="reset" id="simReset">Réinitialiser</button></div>
+        <div class="chat-head"><div class="avatar" data-brand-initial>s</div><div style="flex:1;min-width:0"><b>L'assistant <span data-brand>saimple.</span></b><small>Répond en quelques secondes</small></div><button type="button" class="reset" id="simReset">Réinitialiser</button></div>
         <div class="steps-bar" id="stepsBar" aria-label="Étapes de la simulation"></div>
         <div class="msgs" id="msgs" aria-live="polite"></div>
         <div class="composer" id="composer"></div>
@@ -727,7 +729,7 @@ html.locked #gate{display:grid;min-height:100vh;place-items:center;padding:24px 
         <div class="full" style="grid-column:1/-1;display:flex;gap:12px;align-items:center;flex-wrap:wrap"><button class="btn btn-primary" type="submit">Réserver mon Atelier Express →</button><span class="err-line" id="f-err"></span></div>
         <div class="recap" id="recap" hidden>
           <b>Votre demande est prête.</b>
-          <p class="small">Envoyez-la à <strong id="mailAddr">contact@saimple.ch</strong> ; nous vous répondons sous 24 h ouvrées.</p>
+          <p class="small">Envoyez-la à <strong id="mailAddr" data-brand-mail>contact@saimple.ch</strong> ; nous vous répondons sous 24 h ouvrées.</p>
           <pre id="recapText"></pre>
           <div><button class="btn btn-ghost btn-sm" type="button" id="copyRecap">Copier la demande</button></div>
         </div>
@@ -740,7 +742,7 @@ html.locked #gate{display:grid;min-height:100vh;place-items:center;padding:24px 
 <a class="btn btn-primary fab" id="fab" href="#apercu">Tester mon Excel →</a>
 
 <footer>
-  <div class="wrap"><span class="wm">s<span class="ai">ai</span>mple<span class="dot">.</span></span><span>Applications métier sur mesure · Suisse</span><span>© 2026 saimple.</span></div>
+  <div class="wrap"><span class="wm" data-brand-mark>s<span class="ai">ai</span>mple<span class="dot">.</span></span><span>Applications métier sur mesure · Suisse</span><span>© 2026 <span data-brand>saimple.</span></span></div>
 </footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -1300,6 +1302,38 @@ function applyPal(k){
 palSel.addEventListener("change",()=>{ applyPal(palSel.value); try{ localStorage.setItem("saimple-pal", palSel.value); }catch(e){} });
 let savedPal = "lagon"; try{ savedPal = localStorage.getItem("saimple-pal") || "lagon"; }catch(e){}
 applyPal(savedPal);
+
+/* ---------- Brand switcher: changes the name everywhere ---------- */
+(() => {
+  const BRANDS = {
+    saimple:  {name:"saimple.", parts:["s","ai","mple"], dot:true},
+    raidy:    {name:"Raidy",    parts:["R","ai","dy"]},
+    rewire:   {name:"Rewire",   parts:["","Re","wire"]},
+    rowly:    {name:"Rowly",    parts:["","Row","ly"]},
+    redline:  {name:"Redline",  parts:["","Red","line"]},
+    redcraft: {name:"Redcraft", parts:["","Red","craft"]},
+    redbuild: {name:"Redbuild", parts:["","Red","build"]},
+    redkit:   {name:"Redkit",   parts:["","Red","kit"]},
+    redshift: {name:"Redshift", parts:["","Red","shift"]}
+  };
+  const sel = $("#brand"); if (!sel) return;
+  sel.innerHTML = Object.entries(BRANDS).map(([k,b])=>'<option value="'+k+'">'+esc(b.name)+'</option>').join("");
+  const plain = b => b.name.replace(/\.$/,"");
+  function applyBrand(k){
+    const b = BRANDS[k] || BRANDS.saimple;
+    const mark = esc(b.parts[0])+'<span class="ai">'+esc(b.parts[1])+'</span>'+esc(b.parts[2])+(b.dot?'<span class="dot">.</span>':'');
+    document.querySelectorAll("[data-brand-mark]").forEach(el=>{ el.innerHTML = mark; });
+    document.querySelectorAll("[data-brand]").forEach(el=>{ el.textContent = b.name; });
+    document.querySelectorAll("[data-brand-initial]").forEach(el=>{ el.textContent = plain(b)[0].toLowerCase(); });
+    document.querySelectorAll("[data-brand-mail]").forEach(el=>{ el.textContent = "contact@"+plain(b).toLowerCase()+".ch"; });
+    const home = $("#homeLink"); if (home) home.setAttribute("aria-label", plain(b)+", accueil");
+    document.title = b.name;
+    sel.value = BRANDS[k] ? k : "saimple";
+  }
+  sel.addEventListener("change",()=>{ applyBrand(sel.value); try{ localStorage.setItem("saimple-brand", sel.value); }catch(e){} });
+  let saved = "saimple"; try{ saved = localStorage.getItem("saimple-brand") || "saimple"; }catch(e){}
+  applyBrand(saved);
+})();
 
 /* ---------- Contact form ---------- */
 $("#contact").addEventListener("submit", e => {
