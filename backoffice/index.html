@@ -1,0 +1,473 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="robots" content="noindex, nofollow">
+<title>saimple. back-office</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: app shell — slim module rail left, work area right; collapses to top tabs on phones */
+:root{
+  --bg:#f5f6fa; --surface:#ffffff; --sunk:#eef0f6; --line:#dfe2ec;
+  --fg:#1b1f2e; --muted:#5c6378; --faint:#8a90a3;
+  --lagon:#0f8f8a; --lagon-soft:#d9f1ef; --lilas:#7b68c9; --lilas-soft:#ebe7fa;
+  --good:#2e8a4f; --good-soft:#dff2e5; --warn:#b7791f; --warn-soft:#fbefd9; --crit:#c2423a; --crit-soft:#f9e0de;
+  --display:"Sora",ui-sans-serif,system-ui,sans-serif;
+  --body:"Manrope",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#12141c; --surface:#1a1d28; --sunk:#222634; --line:#2e3344;
+  --fg:#e8eaf2; --muted:#a3a9bd; --faint:#7a8096;
+  --lagon:#3cc2bb; --lagon-soft:#173a3a; --lilas:#a796ec; --lilas-soft:#2b2647;
+  --good:#5cc082; --good-soft:#1c3526; --warn:#e2a64b; --warn-soft:#3a2e17; --crit:#ec7a71; --crit-soft:#402220; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12141c; --surface:#1a1d28; --sunk:#222634; --line:#2e3344;
+  --fg:#e8eaf2; --muted:#a3a9bd; --faint:#7a8096;
+  --lagon:#3cc2bb; --lagon-soft:#173a3a; --lilas:#a796ec; --lilas-soft:#2b2647;
+  --good:#5cc082; --good-soft:#1c3526; --warn:#e2a64b; --warn-soft:#3a2e17; --crit:#ec7a71; --crit-soft:#402220; color-scheme:dark}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:14px;line-height:1.5}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--lagon);outline-offset:2px}
+.num{font-variant-numeric:tabular-nums}
+.app{display:grid;grid-template-columns:232px 1fr;min-height:100%}
+aside{background:var(--surface);border-right:1px solid var(--line);padding-block:20px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:16px;display:flex;flex-direction:column;gap:20px;position:sticky;top:0;height:100vh;overflow:auto}
+.logo{font-family:var(--display);font-weight:700;font-size:26px;letter-spacing:-.02em}
+.logo b{color:var(--lagon);font-weight:700}
+.logo small{display:block;font-family:var(--body);font-weight:600;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+nav{display:flex;flex-direction:column;gap:2px}
+nav button{display:flex;align-items:center;gap:10px;border:0;background:none;padding:9px 10px;border-radius:8px;text-align:left;color:var(--muted);font-weight:600}
+nav button:hover{background:var(--sunk);color:var(--fg)}
+nav button[aria-current="page"]{background:var(--lagon-soft);color:var(--lagon)}
+nav .ct{margin-left:auto;font-size:11px;background:var(--lilas-soft);color:var(--lilas);border-radius:99px;padding:1px 7px}
+nav svg{width:17px;height:17px;flex:none}
+.role{margin-top:auto;display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--muted)}
+.role select{background:var(--sunk);border:1px solid var(--line);border-radius:8px;padding:8px;color:var(--fg)}
+.demo{font-size:11px;color:var(--warn);background:var(--warn-soft);border-radius:8px;padding:8px 10px;line-height:1.4}
+main{min-width:0;padding-block:24px 48px;padding-left:28px;padding-right:max(28px,env(safe-area-inset-right,0px))}
+.top{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:20px}
+h1{font-family:var(--display);font-weight:600;font-size:26px;margin:0;letter-spacing:-.01em;text-wrap:balance}
+.sub{color:var(--muted);margin:2px 0 0}
+h2{font-family:var(--display);font-weight:600;font-size:16px;margin:0 0 12px}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:7px 12px;font-weight:600;font-size:13px}
+.btn:hover{border-color:var(--lagon)}
+.btn.pri{background:var(--lagon);border-color:var(--lagon);color:#fff}
+.btn.pri:hover{filter:brightness(1.08)}
+.btn.sm{padding:4px 9px;font-size:12px}
+.grid{display:grid;gap:16px}
+.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.g2{grid-template-columns:minmax(0,1.4fr) minmax(0,1fr)}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;min-width:0}
+.kpi .l{font-size:12px;color:var(--muted);font-weight:600}
+.kpi .v{font-family:var(--display);font-size:26px;font-weight:600;margin-top:4px}
+.kpi .d{font-size:12px;color:var(--good);font-weight:600}
+.kpi .d.down{color:var(--crit)}
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;padding:2px 8px;border-radius:99px;white-space:nowrap}
+.pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.p-new{background:var(--lilas-soft);color:var(--lilas)}
+.p-ok{background:var(--good-soft);color:var(--good)}
+.p-warn{background:var(--warn-soft);color:var(--warn)}
+.p-crit{background:var(--crit-soft);color:var(--crit)}
+.p-info{background:var(--lagon-soft);color:var(--lagon)}
+.p-mute{background:var(--sunk);color:var(--muted)}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);font-weight:700;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:10px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr.click{cursor:pointer}
+tr.click:hover td{background:var(--sunk)}
+.list{display:flex;flex-direction:column}
+.li{display:flex;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.li:last-child{border-bottom:0}
+.date{font-family:var(--mono);font-size:12px;color:var(--muted);min-width:78px}
+.grow{flex:1;min-width:0}
+.ttl{font-weight:600}
+.meta{font-size:12px;color:var(--muted)}
+/* funnel */
+.fun{display:flex;flex-direction:column;gap:8px}
+.fr{display:grid;grid-template-columns:130px 1fr 42px;gap:10px;align-items:center;font-size:13px}
+.fb{height:22px;border-radius:6px;background:var(--sunk);overflow:hidden}
+.fb i{display:block;height:100%;background:var(--lagon);border-radius:6px}
+/* kanban */
+.kan{display:grid;grid-template-columns:repeat(6,minmax(200px,1fr));gap:12px;overflow-x:auto;padding-bottom:8px}
+.col{background:var(--sunk);border-radius:12px;padding:10px;min-width:0}
+.col h3{font-size:12px;font-weight:700;margin:2px 4px 10px;display:flex;justify-content:space-between;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px;margin-bottom:8px;cursor:pointer;display:flex;flex-direction:column;gap:6px}
+.card:hover{border-color:var(--lagon)}
+.card .row{display:flex;justify-content:space-between;align-items:center;gap:6px}
+.chip{font-size:11px;font-weight:600;color:var(--muted);background:var(--sunk);border-radius:6px;padding:1px 6px}
+/* drawer */
+.scrim{position:fixed;inset:0;background:rgba(10,12,20,.35);z-index:20}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(560px,100%);background:var(--surface);border-left:1px solid var(--line);z-index:21;overflow:auto;padding-block:calc(20px + env(safe-area-inset-top,0px)) calc(24px + env(safe-area-inset-bottom,0px));padding-left:24px;padding-right:max(24px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:18px}
+.dh{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.x{border:0;background:var(--sunk);border-radius:8px;width:32px;height:32px;font-size:18px;flex:none}
+.kv{display:grid;grid-template-columns:140px 1fr;gap:6px 12px;font-size:13px}
+.kv dt{color:var(--muted)}
+.kv dd{margin:0;font-weight:600}
+.struct{font-family:var(--mono);font-size:12px;background:var(--sunk);border-radius:8px;padding:12px;line-height:1.7;overflow-x:auto}
+.struct b{color:var(--lagon);font-weight:500}
+.struct i{color:var(--lilas);font-style:normal}
+.note{font-size:12px;color:var(--muted);display:flex;gap:6px;align-items:flex-start}
+.tl{display:flex;flex-direction:column;gap:0;border-left:2px solid var(--line);margin-left:6px}
+.tli{position:relative;padding:0 0 14px 16px}
+.tli::before{content:"";position:absolute;left:-7px;top:5px;width:12px;height:12px;border-radius:50%;background:var(--surface);border:2px solid var(--lagon)}
+.tli.mail::before{border-color:var(--lilas)}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line)}
+.tabs button{border:0;background:none;padding:8px 10px;font-weight:600;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px}
+.tabs button[aria-selected="true"]{color:var(--lagon);border-color:var(--lagon)}
+/* gantt */
+.gantt{min-width:720px}
+.gh,.gr{display:grid;grid-template-columns:200px 1fr;align-items:center}
+.gh{font-size:11px;color:var(--faint);font-weight:700;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--line);padding-bottom:6px}
+.months{display:grid;grid-template-columns:repeat(4,1fr)}
+.months span{border-left:1px solid var(--line);padding-left:6px}
+.gr{border-bottom:1px solid var(--line);min-height:44px}
+.gr .nm{font-weight:600;font-size:13px;padding-right:10px}
+.gr .nm small{display:block;font-weight:500;color:var(--muted);font-size:11.5px}
+.track{position:relative;height:44px;background:repeating-linear-gradient(90deg,transparent 0 calc(25% - 1px),var(--line) calc(25% - 1px) 25%)}
+.bar{position:absolute;top:13px;height:18px;border-radius:5px;background:var(--lagon-soft);border:1.5px solid var(--lagon)}
+.bar.l{background:var(--lilas-soft);border-color:var(--lilas)}
+.bar .pg{position:absolute;inset:0 auto 0 0;background:var(--lagon);opacity:.55;border-radius:3px}
+.bar.l .pg{background:var(--lilas)}
+.ms{position:absolute;top:15px;width:12px;height:12px;transform:rotate(45deg);background:var(--warn)}
+.today{position:absolute;top:0;bottom:0;width:0;border-left:1.5px dashed var(--crit)}
+/* bars chart */
+.bars{display:flex;align-items:flex-end;gap:10px;height:160px;padding-top:10px;border-bottom:1px solid var(--line)}
+.bars div{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px;height:100%}
+.bars i{width:100%;max-width:38px;background:var(--lagon);border-radius:5px 5px 0 0}
+.bars i.f{background:var(--lilas);opacity:.55}
+.bars span{font-size:11px;color:var(--muted)}
+.bl{display:flex;gap:10px;font-size:11px;color:var(--muted);margin-top:6px}
+.bl span{display:flex;gap:6px;align-items:center}
+.bl i{width:10px;height:10px;border-radius:3px;display:inline-block}
+/* marketing */
+.post{border:1px solid var(--line);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:10px;background:var(--surface)}
+.post p{margin:0;white-space:pre-line;font-size:13.5px}
+.ch{display:flex;gap:6px;flex-wrap:wrap}
+.ch button{border:1px solid var(--line);background:none;border-radius:99px;padding:3px 10px;font-size:12px;font-weight:600;color:var(--muted)}
+.ch button[aria-pressed="true"]{background:var(--lilas-soft);border-color:var(--lilas);color:var(--lilas)}
+.acts{display:flex;gap:8px;flex-wrap:wrap}
+textarea{width:100%;min-height:90px;border:1px solid var(--line);border-radius:8px;background:var(--sunk);color:var(--fg);padding:10px;font:inherit;font-size:13px}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--fg);color:var(--bg);padding:10px 16px;border-radius:10px;font-weight:600;z-index:40;font-size:13px}
+.lock{padding:40px;text-align:center;color:var(--muted)}
+@media (max-width:1080px){.g4{grid-template-columns:repeat(2,minmax(0,1fr))}.g2{grid-template-columns:1fr}}
+@media (max-width:760px){
+  .app{grid-template-columns:1fr}
+  aside{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line);padding-right:max(16px,env(safe-area-inset-right,0px));gap:12px}
+  nav{flex-direction:row;overflow-x:auto;gap:4px}
+  nav button{white-space:nowrap;flex:none}
+  nav svg{display:none}
+  .role{margin-top:0;flex-direction:row;align-items:center;flex-wrap:wrap}
+  main{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+  .kv{grid-template-columns:1fr}
+  .fr{grid-template-columns:100px 1fr 36px}
+}
+@media (prefers-reduced-motion:no-preference){.drawer{animation:sl .2s ease-out}@keyframes sl{from{transform:translateX(24px);opacity:.6}}}
+</style>
+</head><body>
+
+<div id="gate" style="position:fixed;inset:0;z-index:50;background:var(--bg);display:grid;place-items:center;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))">
+  <form id="gf" class="panel" style="width:min(360px,100%);display:flex;flex-direction:column;gap:12px">
+    <div class="logo">s<b>ai</b>mple.<small>Back-office · démo</small></div>
+    <label for="gl" class="meta">Identifiant</label><input id="gl" autocomplete="username" style="border:1px solid var(--line);border-radius:8px;padding:9px;background:var(--sunk);color:var(--fg)">
+    <label for="gp" class="meta">Mot de passe</label><input id="gp" type="password" autocomplete="current-password" style="border:1px solid var(--line);border-radius:8px;padding:9px;background:var(--sunk);color:var(--fg)">
+    <p id="ge" class="meta" style="color:var(--crit);margin:0" hidden>Identifiant ou mot de passe incorrect.</p>
+    <button class="btn pri" type="submit">Se connecter</button>
+  </form>
+</div>
+<div class="app">
+  <aside>
+    <div class="logo">s<b>ai</b>mple.<small>Back-office</small></div>
+    <nav id="nav" aria-label="Modules"></nav>
+    <div class="role">
+      <label for="role">Voir en tant que</label>
+      <select id="role">
+        <option value="admin">Admin (porteur d'offre)</option>
+        <option value="direction">Direction</option>
+        <option value="commercial">Commercial</option>
+        <option value="cdp">Chef de projet</option>
+        <option value="dev">Développeur</option>
+      </select>
+      <div class="demo">Démo : données fictives, aucune connexion réelle (Microsoft, Fitnet, Buffer).</div>
+    </div>
+  </aside>
+  <main id="main"></main>
+</div>
+<div id="layer"></div>
+
+<script>
+const I={
+ home:'<path d="M3 11l9-7 9 7v9a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1z"/>',
+ inbox:'<path d="M3 13l3-8h12l3 8v6a1 1 0 01-1 1H4a1 1 0 01-1-1z M3 13h5l1 3h6l1-3h5"/>',
+ crm:'<path d="M4 5h4v14H4z M10 5h4v9h-4z M16 5h4v6h-4z"/>',
+ cal:'<path d="M4 6h16v14H4z M4 10h16 M8 3v5 M16 3v5"/>',
+ fin:'<path d="M4 7h16v10H4z M12 9.5a2.5 2.5 0 100 5 2.5 2.5 0 000-5"/>',
+ mkt:'<path d="M4 10v4l12 5V5z M16 9a3 3 0 010 6 M7 14l1 5"/>',
+ ppm:'<path d="M4 6h9 M7 12h10 M10 18h10"/>',
+ kpi:'<path d="M4 19V9 M10 19V5 M16 19v-7 M22 19H2"/>'
+};
+const MODS=[
+ {id:'accueil',n:'Accueil',ic:'home',r:['admin','direction','commercial','cdp','dev']},
+ {id:'demandes',n:'Demandes',ic:'inbox',r:['admin','direction','commercial']},
+ {id:'crm',n:'CRM',ic:'crm',r:['admin','direction','commercial','cdp']},
+ {id:'rdv',n:'RDV et ateliers',ic:'cal',r:['admin','direction','commercial','cdp']},
+ {id:'finance',n:'Finance',ic:'fin',r:['admin','direction','commercial','cdp']},
+ {id:'marketing',n:'Marketing',ic:'mkt',r:['admin','direction','commercial','cdp']},
+ {id:'projets',n:'Projets',ic:'ppm',r:['admin','direction','cdp','dev']},
+ {id:'indicateurs',n:'Indicateurs',ic:'kpi',r:['admin','direction','commercial','cdp']}
+];
+const STAGES=['Nouvelle demande','Prospect qualifié','Atelier réservé','Atelier réalisé','Devis envoyé','Signé'];
+const chf=n=>"CHF "+n.toLocaleString('fr-CH').replace(/ |\s/g,"'");
+
+let S={
+ role:'admin',
+ demandes:[
+  {id:'D-0142',ent:'Menuiserie Favre SA',ct:'Julien Favre',act:'Menuiserie, 14 employés',src:'Google Ads',date:'03.11',st:'new',
+   need:'Suivi des chantiers et des heures par menuisier',adj:'Ajouter une vue planning par semaine',
+   struct:[['Chantiers',[['Client','texte'],['Adresse','texte'],['Début','date'],['Fin prévue','date'],['Statut','liste']]],['Heures',[['Date','date'],['Menuisier','texte'],['Chantier','lien'],['Heures','nombre']]]]},
+  {id:'D-0141',ent:'Cabinet dentaire du Lac',ct:'Dr Sophie Monnier',act:'Cabinet dentaire, 6 personnes',src:'LinkedIn',date:'02.11',st:'new',
+   need:'Gestion du stock de matériel et des commandes fournisseurs',adj:'Alerte quand un stock passe sous le seuil',
+   struct:[['Stock',[['Article','texte'],['Fournisseur','texte'],['Quantité','nombre'],['Seuil','nombre']]],['Commandes',[['Date','date'],['Article','lien'],['Qté','nombre'],['Reçue','oui/non']]]]},
+  {id:'D-0140',ent:'Transports Rochat Sàrl',ct:'Marc Rochat',act:'Transport régional, 22 employés',src:'Fiduciaire Morel',date:'31.10',st:'conv',
+   need:'Planning des chauffeurs et des véhicules',adj:'Couleurs par type de véhicule',
+   struct:[['Tournées',[['Date','date'],['Chauffeur','texte'],['Véhicule','texte'],['Départ','heure'],['Clients','texte']]],['Véhicules',[['Plaque','texte'],['Type','liste'],['Prochain service','date']]]]},
+  {id:'D-0139',ent:'Clinique vétérinaire des Alpes',ct:'Laura Berset',act:'Clinique vétérinaire, 9 personnes',src:'Site (organique)',date:'29.10',st:'conv',
+   need:'Suivi des vaccins et rappels clients',adj:'Envoi des rappels par SMS',
+   struct:[['Animaux',[['Nom','texte'],['Espèce','liste'],['Propriétaire','texte'],['Dernier vaccin','date']]]]},
+  {id:'D-0138',ent:'Boulangerie Jaquier',ct:'Anne Jaquier',act:'Boulangerie, 3 points de vente',src:'Instagram',date:'27.10',st:'arch',
+   need:'Commandes des points de vente',adj:'—',
+   struct:[['Commandes',[['Magasin','liste'],['Produit','texte'],['Quantité','nombre'],['Jour','date']]]]}
+ ],
+ deals:[
+  {id:1,ent:'Menuiserie Favre SA',ct:'Julien Favre',st:0,f:'Essentiel',m:15000,next:'Qualifier le besoin',app:'—'},
+  {id:2,ent:'Cabinet dentaire du Lac',ct:'Dr Sophie Monnier',st:0,f:'Essentiel',m:12000,next:'Appeler',app:'—'},
+  {id:3,ent:'Transports Rochat Sàrl',ct:'Marc Rochat',st:2,f:'Pro',m:32000,next:'Atelier le 06.11',app:'Fiduciaire Morel'},
+  {id:4,ent:'Clinique vétérinaire des Alpes',ct:'Laura Berset',st:1,f:'Essentiel',m:14000,next:'Proposer des dates',app:'—'},
+  {id:5,ent:'Garage Pittet SA',ct:'Nicolas Pittet',st:3,f:'Pro',m:28000,next:'Envoyer le devis',app:'Consultant interne'},
+  {id:6,ent:'Fiduciaire Morel',ct:'Claire Morel',st:4,f:'Pro',m:38500,next:'Relance le 07.11',app:'—'},
+  {id:7,ent:'Atelier mécanique Brandt',ct:'Thomas Brandt',st:5,f:'Sur mesure+',m:52000,next:'Lancement projet',app:'—'},
+  {id:8,ent:'Domaine viticole Cuendet',ct:'Pierre Cuendet',st:5,f:'Essentiel',m:16500,next:'Recette le 14.11',app:'Consultant interne'},
+  {id:9,ent:'Ecole de musique Allegro',ct:'Mireille Dubois',st:4,f:'Essentiel',m:12500,next:'Relance le 05.11',app:'—'}
+ ],
+ rdv:[
+  {d:'Mer 05.11',h:'10:00',ent:'Ecole de musique Allegro',t:'Relance devis',type:'Appel',who:'Commercial'},
+  {d:'Jeu 06.11',h:'09:00',ent:'Transports Rochat Sàrl',t:'Atelier Express (2 h)',type:'Atelier',who:'Admin + Lead dev'},
+  {d:'Ven 07.11',h:'14:00',ent:'Fiduciaire Morel',t:'Relance devis Pro',type:'Teams',who:'Commercial'},
+  {d:'Lun 10.11',h:'11:00',ent:'Clinique vétérinaire des Alpes',t:'Qualification',type:'Teams',who:'Commercial'},
+  {d:'Ven 14.11',h:'15:00',ent:'Domaine viticole Cuendet',t:'Recette V1',type:'Sur site',who:'Chef de projet'}
+ ],
+ cr:[
+  {d:'28.10',ent:'Garage Pittet SA',t:'Atelier Express',txt:'3 fichiers Excel : réparations, stock pièces, factures. Priorité : suivi des réparations en atelier et statut visible par l\'accueil. 4 utilisateurs. Formule Pro proposée, prix ferme 28\'000.'},
+  {d:'21.10',ent:'Fiduciaire Morel',t:'Atelier Express',txt:'Suivi des mandats clients et échéances fiscales. Import mensuel depuis le logiciel comptable. 8 utilisateurs. Prix ferme 38\'500.'}
+ ],
+ fin:[
+  {ent:'Atelier mécanique Brandt',obj:'Projet Sur mesure+',m:52000,ech:'40 % à la signature',st:'Payé',fit:'FN-2026-0412'},
+  {ent:'Atelier mécanique Brandt',obj:'Jalon 2 (recette)',m:20800,ech:'15.12.2026',st:'À venir',fit:'—'},
+  {ent:'Domaine viticole Cuendet',obj:'Projet Essentiel',m:8250,ech:'50 % à la signature',st:'Payé',fit:'FN-2026-0398'},
+  {ent:'Domaine viticole Cuendet',obj:'Solde à la livraison',m:8250,ech:'21.11.2026',st:'À facturer',fit:'—'},
+  {ent:'Garage Pittet SA',obj:'Atelier Express',m:1000,ech:'28.10.2026',st:'En retard',fit:'FN-2026-0405'},
+  {ent:'Fiduciaire Morel',obj:'Atelier Express',m:1000,ech:'21.10.2026',st:'Payé',fit:'FN-2026-0391'},
+  {ent:'Transports Rochat Sàrl',obj:'Atelier Express',m:1000,ech:'06.11.2026',st:'À facturer',fit:'—'}
+ ],
+ posts:[
+  {id:1,idea:'Un client gérait ses congés sur 4 fichiers Excel',st:'review',date:'Mar 04.11 · 08:30',ch:'LinkedIn page',
+   v:{'LinkedIn page':'4 fichiers Excel pour gérer les congés de 12 personnes.\nUn oubli de copie, et deux personnes partent la même semaine.\n\nEn 3 semaines, ces fichiers sont devenus une app : une demande, une validation, un planning à jour pour tout le monde.\n\nVotre Excel peut-il devenir une app ? Testez-le en 2 minutes sur saimple.ch',
+      'LinkedIn profil':'Cette semaine, une PME m\'a montré son « système » de congés : 4 fichiers Excel, recopiés à la main chaque lundi.\n\nCe n\'est pas un manque d\'organisation. C\'est qu\'aucun logiciel du marché n\'était fait pour eux.\n\nC\'est exactement pour ça qu\'on a lancé saimple.',
+      'Instagram':'4 Excel → 1 app ✓\nLes congés de toute l\'équipe, enfin au même endroit.\n#PME #Suisse #Excel',
+      'Vidéo (script)':'0-3 s : écran avec 4 fichiers Excel qui clignotent.\n3-10 s : « Votre planning de congés ressemble à ça ? »\n10-25 s : l\'Excel se retourne en app (animation du site).\n25-30 s : « Propulsé par l\'IA, piloté par des ingénieurs. saimple.ch »'}},
+  {id:2,idea:'Démo du simulateur : déposez votre Excel',st:'review',date:'Jeu 06.11 · 08:30',ch:'LinkedIn page',
+   v:{'LinkedIn page':'Déposez votre fichier Excel. Deux minutes plus tard, vous voyez à quoi ressemblerait votre app.\n\nVotre fichier reste dans votre navigateur : seule sa structure sert à générer l\'aperçu.\n\nEssayez sur saimple.ch',
+      'LinkedIn profil':'On a construit un simulateur que j\'aurais aimé avoir il y a 20 ans : un Excel en entrée, un aperçu d\'app en sortie.',
+      'Instagram':'Votre Excel. Votre app. 2 minutes.\nLien en bio.',
+      'Vidéo (script)':'Capture d\'écran du simulateur, 3 étapes, aperçu final en plein écran.'}},
+  {id:3,idea:'Pourquoi un prix ferme après l\'Atelier Express',st:'pub',date:'Lun 03.11 · 08:30',ch:'LinkedIn page',stats:'2\'140 vues · 38 réactions · 3 clics simulateur',
+   v:{'LinkedIn page':'Chez nous, pas de devis « à partir de ». Après un atelier de 2 heures, vous avez un prix ferme.'}}
+ ],
+ projets:[
+  {n:'Atelier mécanique Brandt',d:'Gestion d\'atelier · Sur mesure+',s:0,e:62,p:35,c:'',ms:[[30,'Recette V1']]},
+  {n:'Domaine viticole Cuendet',d:'Suivi des vendanges · Essentiel',s:0,e:22,p:70,c:'',ms:[[13,'Recette']]},
+  {n:'Fiduciaire Morel',d:'Mandats et échéances · Pro',s:12,e:58,p:0,c:'l',ms:[]},
+  {n:'Garage Pittet SA',d:'Réparations et stock · Pro',s:20,e:65,p:0,c:'l',ms:[]},
+  {n:'Back-office saimple.',d:'Interne · V1 à V4',s:0,e:100,p:15,c:'',ms:[[22,'V1'],[45,'V2']]}
+ ]
+};
+
+let cur='accueil', mainEl=document.getElementById('main'), layer=document.getElementById('layer');
+try{const r=localStorage.getItem('sb-role');if(r)S.role=r}catch(e){}
+document.getElementById('role').value=S.role;
+
+function allowed(id){return MODS.find(m=>m.id===id).r.includes(S.role)}
+function navRender(){
+ const nb=S.demandes.filter(d=>d.st==='new').length, pr=S.posts.filter(p=>p.st==='review').length;
+ document.getElementById('nav').innerHTML=MODS.filter(m=>m.r.includes(S.role)).map(m=>{
+  const ct=m.id==='demandes'&&nb?`<span class="ct num">${nb}</span>`:m.id==='marketing'&&pr?`<span class="ct num">${pr}</span>`:'';
+  return `<button data-go="${m.id}" ${m.id===cur?'aria-current="page"':''}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${I[m.ic]}</svg>${m.n}${ct}</button>`}).join('');
+}
+function go(id){if(!MODS.find(m=>m.id===id))id='accueil';if(!allowed(id))id='accueil';cur=id;if(location.hash!=='#'+id)history.replaceState(null,'','#'+id);render()}
+function render(){navRender();mainEl.innerHTML=V[cur]();window.scrollTo(0,0)}
+function head(t,s,act=''){return `<div class="top"><div><h1>${t}</h1><p class="sub">${s}</p></div><div class="acts">${act}</div></div>`}
+function toast(t){const e=document.createElement('div');e.className='toast';e.textContent=t;document.body.appendChild(e);setTimeout(()=>e.remove(),2400)}
+function closeD(){layer.innerHTML=''}
+function drawer(html){layer.innerHTML=`<div class="scrim" data-close></div><div class="drawer" role="dialog" aria-modal="true">${html}</div>`;layer.querySelector('.x')?.focus()}
+const stPill={new:'<span class="pill p-new">Nouvelle</span>',conv:'<span class="pill p-ok">Convertie</span>',arch:'<span class="pill p-mute">Archivée</span>'};
+const finPill=s=>({'Payé':'p-ok','À venir':'p-mute','À facturer':'p-info','En retard':'p-crit','Facturé':'p-warn'})[s];
+
+const V={
+accueil(){
+ const signed=S.deals.filter(d=>d.st===5).reduce((a,d)=>a+d.m,0);
+ const pipe=S.deals.filter(d=>d.st<5).reduce((a,d)=>a+d.m,0);
+ const late=S.fin.filter(f=>f.st==='En retard');
+ if(S.role==='dev') return head('Bonjour','Vos tâches de la semaine')+`<div class="panel"><h2>Mes tâches</h2><div class="list">
+  ${[['Brandt','Écran planning atelier','Mer 05.11'],['Brandt','Import des ordres de réparation','Ven 07.11'],['Back-office','Connexion Microsoft','Lun 10.11']].map(t=>`<div class="li"><span class="chip">${t[0]}</span><div class="grow ttl">${t[1]}</div><span class="date">${t[2]}</span></div>`).join('')}</div></div>`;
+ return head('Bonjour','Semaine du 3 novembre 2026')+`
+ <div class="grid g4">
+  <div class="panel kpi"><div class="l">Demandes (30 j)</div><div class="v num">23</div><div class="d">+9 vs mois précédent</div></div>
+  <div class="panel kpi"><div class="l">Ateliers réservés</div><div class="v num">6</div><div class="d">dont 1 cette semaine</div></div>
+  <div class="panel kpi"><div class="l">CA signé (2026)</div><div class="v num">${chf(signed)}</div><div class="d">2 projets</div></div>
+  <div class="panel kpi"><div class="l">Pipeline ouvert</div><div class="v num">${chf(pipe)}</div><div class="d">${S.deals.filter(d=>d.st<5).length} opportunités</div></div>
+ </div>
+ <div class="grid g2" style="margin-top:16px">
+  <div class="panel"><h2>Prochains rendez-vous</h2><div class="list">${S.rdv.slice(0,4).map(r=>`<div class="li"><span class="date">${r.d}<br>${r.h}</span><div class="grow"><div class="ttl">${r.ent}</div><div class="meta">${r.t} · ${r.type}</div></div></div>`).join('')}</div></div>
+  <div class="panel"><h2>À traiter</h2><div class="list">
+   <div class="li"><span class="pill p-new">2</span><div class="grow">Nouvelles demandes du site</div>${allowed('demandes')?'<button class="btn sm" data-go="demandes">Voir</button>':''}</div>
+   <div class="li"><span class="pill p-warn">2</span><div class="grow">Posts à valider</div><button class="btn sm" data-go="marketing">Valider</button></div>
+   <div class="li"><span class="pill p-crit">${late.length}</span><div class="grow">Paiement en retard : ${late.map(l=>l.ent).join(', ')}</div><button class="btn sm" data-go="finance">Voir</button></div>
+   <div class="li"><span class="pill p-info">1</span><div class="grow">Devis à envoyer : Garage Pittet SA</div><button class="btn sm" data-go="crm">Ouvrir</button></div>
+  </div></div>
+ </div>`;
+},
+demandes(){
+ return head('Demandes','Reçues depuis le site saimple. et le simulateur')+`
+ <div class="panel tw"><table><thead><tr><th>N°</th><th>Entreprise</th><th>Besoin</th><th>Source</th><th>Reçue</th><th>Statut</th></tr></thead><tbody>
+ ${S.demandes.map(d=>`<tr class="click" data-dem="${d.id}"><td class="num">${d.id}</td><td><div class="ttl">${d.ent}</div><div class="meta">${d.act}</div></td><td>${d.need}</td><td><span class="chip">${d.src}</span></td><td class="num">${d.date}</td><td>${stPill[d.st]}</td></tr>`).join('')}
+ </tbody></table></div>
+ <p class="note" style="margin-top:12px">Le fichier Excel du visiteur ne quitte jamais son navigateur : seule sa structure (onglets, colonnes, types) arrive ici.</p>`;
+},
+crm(){
+ const total=s=>S.deals.filter(d=>d.st===s).reduce((a,d)=>a+d.m,0);
+ return head('CRM','Pipeline des opportunités','<button class="btn" data-go="indicateurs">Indicateurs</button>')+`
+ <div class="kan">${STAGES.map((s,i)=>`<div class="col"><h3><span>${s}</span><span class="num">${S.deals.filter(d=>d.st===i).length}</span></h3>
+ ${S.deals.filter(d=>d.st===i).map(d=>`<div class="card" data-deal="${d.id}"><div class="ttl">${d.ent}</div><div class="row"><span class="chip">${d.f}</span><span class="num meta">${chf(d.m)}</span></div><div class="meta">→ ${d.next}</div></div>`).join('')}
+ <div class="meta num" style="padding:2px 4px">${chf(total(i))}</div></div>`).join('')}</div>`;
+},
+rdv(){
+ return head('RDV et ateliers','Synchronisé avec les agendas Outlook (démo)','<button class="btn pri" data-act="newrdv">Nouveau rendez-vous</button>')+`
+ <div class="grid g2">
+  <div class="panel"><h2>Agenda</h2><div class="list">${S.rdv.map(r=>`<div class="li"><span class="date">${r.d}<br>${r.h}</span><div class="grow"><div class="ttl">${r.ent}</div><div class="meta">${r.t} · ${r.who}</div></div><span class="pill ${r.type==='Atelier'?'p-new':'p-info'}">${r.type}</span></div>`).join('')}</div></div>
+  <div class="panel"><h2>Comptes rendus récents</h2><div class="list">${S.cr.map(c=>`<div class="li" style="align-items:flex-start"><span class="date">${c.d}</span><div class="grow"><div class="ttl">${c.ent} · ${c.t}</div><div class="meta">${c.txt}</div></div></div>`).join('')}</div></div>
+ </div>`;
+},
+finance(){
+ const sum=st=>S.fin.filter(f=>f.st===st).reduce((a,f)=>a+f.m,0);
+ const canFit=['admin','commercial'].includes(S.role);
+ return head('Finance client','Devis, échéances et liaison Fitnet')+`
+ <div class="grid g4">
+  <div class="panel kpi"><div class="l">Encaissé</div><div class="v num">${chf(sum('Payé'))}</div></div>
+  <div class="panel kpi"><div class="l">À facturer</div><div class="v num">${chf(sum('À facturer'))}</div></div>
+  <div class="panel kpi"><div class="l">En retard</div><div class="v num">${chf(sum('En retard'))}</div><div class="d down">1 relance à faire</div></div>
+  <div class="panel kpi"><div class="l">À venir</div><div class="v num">${chf(sum('À venir'))}</div></div>
+ </div>
+ <div class="panel tw" style="margin-top:16px"><table><thead><tr><th>Client</th><th>Objet</th><th style="text-align:right">Montant</th><th>Échéance</th><th>Statut</th><th>Fitnet</th><th></th></tr></thead><tbody>
+ ${S.fin.map((f,i)=>`<tr><td class="ttl">${f.ent}</td><td>${f.obj}</td><td class="num" style="text-align:right">${chf(f.m)}</td><td class="num">${f.ech}</td><td><span class="pill ${finPill(f.st)}">${f.st}</span></td><td class="num meta">${f.fit}</td><td>${f.st==='À facturer'&&canFit?`<button class="btn sm" data-fit="${i}">Envoyer à Fitnet</button>`:f.st==='En retard'?`<button class="btn sm" data-act="relance">Relancer</button>`:''}</td></tr>`).join('')}
+ </tbody></table></div>`;
+},
+marketing(){
+ const canVal=['admin'].includes(S.role);
+ return head('Marketing','Posts générés par l\'IA, à valider avant publication','<button class="btn pri" data-act="idea">Nouvelle idée</button>')+`
+ <div class="grid g2">
+  <div style="display:flex;flex-direction:column;gap:14px">${S.posts.filter(p=>p.st!=='pub').map(p=>`<div class="post">
+   <div class="row" style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap"><span class="ttl">${p.idea}</span><span class="pill ${p.st==='ok'?'p-ok':'p-warn'}">${p.st==='ok'?'Validé · dans Buffer':'À valider'}</span></div>
+   <div class="ch">${Object.keys(p.v).map(c=>`<button aria-pressed="${c===p.ch}" data-ch="${p.id}|${c}">${c}</button>`).join('')}</div>
+   <p>${p.v[p.ch]}</p>
+   <div class="meta">Prévu : ${p.date}</div>
+   ${p.st==='review'?`<div class="acts">${canVal?`<button class="btn pri sm" data-val="${p.id}">Valider</button>`:'<span class="meta">Validation réservée au validateur marketing</span>'}<button class="btn sm" data-regen="${p.id}">Régénérer</button></div>`:''}
+  </div>`).join('')}</div>
+  <div class="panel"><h2>Publiés récemment</h2><div class="list">${S.posts.filter(p=>p.st==='pub').map(p=>`<div class="li" style="align-items:flex-start"><span class="date">${p.date.split(' · ')[0]}</span><div class="grow"><div class="ttl">${p.idea}</div><div class="meta num">${p.stats}</div></div></div>`).join('')}</div>
+   <h2 style="margin-top:20px">Banque d'idées</h2><div class="list">${['Coulisses : une journée de l\'équipe','Avant/après : planning de chauffeurs','Conseil PME : quand quitter Excel ?'].map(t=>`<div class="li"><span class="chip">Idée</span><div class="grow">${t}</div><button class="btn sm" data-act="gen">Générer</button></div>`).join('')}</div></div>
+ </div>`;
+},
+projets(){
+ const list=S.role==='dev'?S.projets.filter(p=>p.n.includes('Brandt')||p.n.includes('Back-office')):S.projets;
+ return head('Projets','Portefeuille · novembre 2026 à février 2027')+`
+ <div class="grid g4" style="margin-bottom:16px">
+  <div class="panel kpi"><div class="l">Projets en cours</div><div class="v num">3</div></div>
+  <div class="panel kpi"><div class="l">À démarrer</div><div class="v num">2</div></div>
+  <div class="panel kpi"><div class="l">Jalons ce mois</div><div class="v num">3</div></div>
+  <div class="panel kpi"><div class="l">Charge équipe</div><div class="v num">82 %</div><div class="d">4 devs · 1 lead</div></div>
+ </div>
+ <div class="panel tw"><div class="gantt">
+  <div class="gh"><span>Projet</span><div class="months"><span>Nov</span><span>Déc</span><span>Jan</span><span>Fév</span></div></div>
+  ${list.map(p=>`<div class="gr"><div class="nm">${p.n}<small>${p.d}</small></div><div class="track"><div class="today" style="left:2%"></div><div class="bar ${p.c}" style="left:${p.s}%;width:${p.e-p.s}%"><div class="pg" style="width:${p.p}%"></div></div>${p.ms.map(m=>`<div class="ms" style="left:calc(${m[0]}% - 6px)" title="${m[1]}"></div>`).join('')}</div></div>`).join('')}
+  <div class="bl" style="margin-top:10px"><span><i style="background:var(--lagon)"></i>En cours (part réalisée foncée)</span><span><i style="background:var(--lilas)"></i>À démarrer</span><span><i style="background:var(--warn)"></i>Jalon</span><span><i style="border-left:2px dashed var(--crit);width:2px;border-radius:0"></i>Aujourd'hui</span></div>
+ </div></div>`;
+},
+indicateurs(){
+ const fun=[['Demandes',23],['Qualifiées',15],['Ateliers réservés',6],['Ateliers réalisés',4],['Devis envoyés',4],['Signés',2]];
+ const ca=[['Jun',0,0],['Jul',0,0],['Aoû',0,0],['Sep',0,12],['Oct',68.5,40],['Nov',0,55],['Déc',0,70]];
+ const mx=70;
+ return head('Indicateurs','Données fictives de démonstration')+`
+ <div class="grid g2">
+  <div class="panel"><h2>Entonnoir commercial (30 jours)</h2><div class="fun">${fun.map(f=>`<div class="fr"><span>${f[0]}</span><div class="fb"><i style="width:${f[1]/23*100}%"></i></div><span class="num" style="text-align:right">${f[1]}</span></div>`).join('')}</div>
+   <p class="meta" style="margin-top:10px">Taux demande → signature : 8,7 %. Atelier réalisé → signature : 50 %.</p></div>
+  <div class="panel"><h2>CA signé par mois (k CHF)</h2><div class="bars">${ca.map(c=>`<div><span class="num">${c[1]||c[2]||''}</span><i class="${c[1]?'':'f'}" style="height:${Math.max(c[1],c[2])/mx*100}%"></i><span>${c[0]}</span></div>`).join('')}</div>
+   <div class="bl"><span><i style="background:var(--lagon)"></i>Signé</span><span><i style="background:var(--lilas);opacity:.55"></i>Objectif / prévision</span></div></div>
+ </div>
+ <div class="panel tw" style="margin-top:16px"><h2>Coût par Atelier Express, par canal</h2><table><thead><tr><th>Canal</th><th style="text-align:right">Dépense</th><th style="text-align:right">Demandes</th><th style="text-align:right">Ateliers</th><th style="text-align:right">Coût / atelier</th><th></th></tr></thead><tbody>
+  ${[['Google Ads',950,9,2,'p-ok','Garder'],['LinkedIn (boosts)',300,6,2,'p-ok','Garder'],['Prescripteurs',500,3,1,'p-ok','Garder'],['Instagram (boosts)',250,5,0,'p-crit','Couper'],['Organique (site)',0,0,1,'p-ok','Garder']].map(r=>`<tr><td class="ttl">${r[0]}</td><td class="num" style="text-align:right">${chf(r[1])}</td><td class="num" style="text-align:right">${r[2]}</td><td class="num" style="text-align:right">${r[3]}</td><td class="num" style="text-align:right">${r[3]?chf(Math.round(r[1]/r[3])):'—'}</td><td><span class="pill ${r[4]}">${r[5]}</span></td></tr>`).join('')}
+ </tbody></table></div>`;
+}
+};
+
+function demDrawer(id){
+ const d=S.demandes.find(x=>x.id===id);
+ drawer(`<div class="dh"><div><div class="meta num">${d.id} · reçue le ${d.date}</div><h1 style="font-size:20px">${d.ent}</h1></div><button class="x" data-close aria-label="Fermer">×</button></div>
+ <dl class="kv"><dt>Contact</dt><dd>${d.ct}</dd><dt>Activité</dt><dd>${d.act}</dd><dt>Besoin exprimé</dt><dd>${d.need}</dd><dt>Ajustement demandé</dt><dd>${d.adj}</dd><dt>Source</dt><dd>${d.src}</dd></dl>
+ <div><h2>Structure du fichier Excel</h2><div class="struct">${d.struct.map(o=>`<b>▸ ${o[0]}</b><br>${o[1].map(c=>`&nbsp;&nbsp;${c[0]} <i>· ${c[1]}</i>`).join('<br>')}`).join('<br>')}</div>
+ <p class="note" style="margin-top:8px">Aucune donnée du fichier n'est stockée. L'aperçu vu par le prospect a été rempli dans son navigateur.</p></div>
+ <div><h2>Aperçu généré</h2><div class="struct">App « ${d.need.split(' ').slice(0,4).join(' ')}… » · 6 menus · palette du logo client</div></div>
+ <div class="acts">${d.st==='new'?`<button class="btn pri" data-conv="${d.id}">Convertir en prospect</button><button class="btn" data-arch="${d.id}">Archiver</button>`:''}<button class="btn" data-act="mail">Répondre par mail</button></div>`);
+}
+function dealDrawer(id){
+ const d=S.deals.find(x=>x.id===id);
+ drawer(`<div class="dh"><div><span class="pill p-info">${STAGES[d.st]}</span><h1 style="font-size:20px;margin-top:6px">${d.ent}</h1><div class="meta">${d.ct}</div></div><button class="x" data-close aria-label="Fermer">×</button></div>
+ <div class="tabs" role="tablist"><button role="tab" aria-selected="true">Résumé</button><button role="tab" aria-selected="false" data-act="tabdemo">Mails</button><button role="tab" aria-selected="false" data-act="tabdemo">Documents</button></div>
+ <dl class="kv"><dt>Formule</dt><dd>${d.f}</dd><dt>Montant</dt><dd class="num">${chf(d.m)}</dd><dt>Prochaine action</dt><dd>${d.next}</dd><dt>Apporteur</dt><dd>${d.app}</dd></dl>
+ <div><h2>Historique</h2><div class="tl">
+  <div class="tli mail"><div class="ttl">Mail reçu · « Re: votre proposition »</div><div class="meta">Il y a 2 jours · rattaché automatiquement (Outlook)</div></div>
+  <div class="tli"><div class="ttl">Atelier Express</div><div class="meta">Compte rendu disponible · 2 h · Teams</div></div>
+  <div class="tli mail"><div class="ttl">Mail envoyé · confirmation de rendez-vous</div><div class="meta">Il y a 9 jours</div></div>
+  <div class="tli"><div class="ttl">Demande reçue depuis le simulateur</div><div class="meta">Il y a 12 jours · structure Excel jointe</div></div>
+ </div></div>
+ <div class="acts">${d.st<5?`<button class="btn pri" data-adv="${d.id}">Passer à « ${STAGES[d.st+1]} »</button>`:'<button class="btn pri" data-go="projets">Voir le projet</button>'}<button class="btn" data-act="mail">Écrire un mail</button><button class="btn" data-act="newrdv">Planifier un RDV</button></div>`);
+}
+
+document.addEventListener('click',e=>{
+ const t=e.target.closest('[data-go],[data-dem],[data-deal],[data-close],[data-conv],[data-arch],[data-adv],[data-fit],[data-val],[data-regen],[data-ch],[data-act]');
+ if(!t)return;
+ const ds=t.dataset;
+ if(ds.go!==undefined){closeD();go(ds.go)}
+ else if(ds.dem)demDrawer(ds.dem);
+ else if(ds.deal)dealDrawer(+ds.deal);
+ else if(ds.close!==undefined)closeD();
+ else if(ds.conv){const d=S.demandes.find(x=>x.id===ds.conv);d.st='conv';const deal=S.deals.find(x=>x.ent===d.ent);if(deal)deal.st=1;closeD();render();toast('Converti en prospect qualifié')}
+ else if(ds.arch){S.demandes.find(x=>x.id===ds.arch).st='arch';closeD();render();toast('Demande archivée')}
+ else if(ds.adv){const d=S.deals.find(x=>x.id===+ds.adv);d.st++;render();dealDrawer(d.id);toast(d.st===5?'Signé : projet créé dans le portefeuille':'Statut mis à jour')}
+ else if(ds.fit){const f=S.fin[+ds.fit];f.st='Facturé';f.fit='FN-2026-04'+(20+ +ds.fit);render();toast('Facture créée dans Fitnet (démo)')}
+ else if(ds.val){S.posts.find(p=>p.id===+ds.val).st='ok';render();toast('Validé : programmé dans Buffer')}
+ else if(ds.regen){toast('Nouvelle version générée (démo)')}
+ else if(ds.ch){const [id,c]=ds.ch.split('|');S.posts.find(p=>p.id===+id).ch=c;render()}
+ else if(ds.act){toast({newrdv:'Rendez-vous créé dans Outlook (démo)',relance:'Relance envoyée (démo)',idea:'Idée ajoutée à la banque (démo)',gen:'Brouillons générés pour 4 canaux (démo)',mail:'Ouverture du mail dans Outlook (démo)',tabdemo:'Onglet disponible dans la version réelle'}[ds.act]||'Démo')}
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeD()});
+document.getElementById('role').addEventListener('change',e=>{S.role=e.target.value;try{localStorage.setItem('sb-role',S.role)}catch(_){}go(cur)});
+window.addEventListener('hashchange',()=>go(location.hash.slice(1)));
+go(location.hash.slice(1)||'accueil');
+(function(){const g=document.getElementById('gate');let ok=false;try{ok=sessionStorage.getItem('sb-ok')==='1'}catch(_){}
+ if(ok){g.hidden=true;return}
+ document.getElementById('gf').addEventListener('submit',e=>{e.preventDefault();
+  if(document.getElementById('gl').value.trim()==='liacestbien'&&document.getElementById('gp').value==='liacestmal'){g.hidden=true;try{sessionStorage.setItem('sb-ok','1')}catch(_){}}
+  else document.getElementById('ge').hidden=false});})();
+</script>
+
+</body></html>
