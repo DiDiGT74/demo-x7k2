@@ -1,0 +1,421 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>RedApporteur</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@400;500;600&display=swap">
+<style>
+/* Layout: barre Redsen en haut, sélecteur de rôle (maquette), navigation par rôle, contenu centré 1080px */
+:root{
+  --red:#d2232a; --red-ink:#a5161c; --red-soft:#fbe9ea;
+  --ink:#1d2330; --muted:#5d6472; --line:#e3e5ea; --bg:#f6f6f8; --card:#ffffff;
+  --ok:#1f7a4d; --ok-soft:#e3f3ea; --warn:#9a6200; --warn-soft:#fdf1dc; --info:#1f5f9a; --info-soft:#e4eef8; --grey-soft:#eceef2;
+  --display:"Montserrat",system-ui,sans-serif; --body:"Inter",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --red:#ef4a50; --red-ink:#ff8a8e; --red-soft:#3a1d20; --ink:#eceef2; --muted:#a3a9b6; --line:#2e3340; --bg:#14171e; --card:#1c2029;
+  --ok:#5fcf95; --ok-soft:#173327; --warn:#f0b450; --warn-soft:#382b14; --info:#7fb3e8; --info-soft:#18283a; --grey-soft:#262b36; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --red:#ef4a50; --red-ink:#ff8a8e; --red-soft:#3a1d20; --ink:#eceef2; --muted:#a3a9b6; --line:#2e3340; --bg:#14171e; --card:#1c2029;
+  --ok:#5fcf95; --ok-soft:#173327; --warn:#f0b450; --warn-soft:#382b14; --info:#7fb3e8; --info-soft:#18283a; --grey-soft:#262b36; color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0}[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5}
+.wrap{max-width:1080px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header.top{background:var(--card);border-bottom:3px solid var(--red)}
+header.top .wrap{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding-block:12px}
+.logo{font-family:var(--display);font-weight:800;font-size:22px;letter-spacing:-.5px}
+.logo b{color:var(--red)}
+.logo small{display:block;font-family:var(--body);font-weight:500;font-size:11px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+nav.main{display:flex;gap:4px;flex-wrap:wrap;margin-left:auto}
+nav.main button{background:none;border:0;padding:8px 12px;font:600 14px var(--body);color:var(--muted);border-radius:6px;cursor:pointer}
+nav.main button.on{color:var(--red);background:var(--red-soft)}
+.user{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
+.av{width:30px;height:30px;border-radius:50%;background:var(--red);color:#fff;display:grid;place-items:center;font:700 12px var(--display)}
+.mock{background:var(--ink);color:var(--bg);font-size:12px}
+.mock .wrap{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding-block:6px}
+.mock button{background:transparent;color:var(--bg);border:1px solid color-mix(in srgb,var(--bg) 40%,transparent);border-radius:20px;padding:3px 10px;font:500 12px var(--body);cursor:pointer}
+.mock button.on{background:var(--red);border-color:var(--red);color:#fff}
+main{padding-block:28px 60px}
+h1{font-family:var(--display);font-size:28px;line-height:1.2;margin:0 0 6px;text-wrap:balance}
+h2{font-family:var(--display);font-size:18px;margin:0 0 12px}
+.lead{color:var(--muted);margin:0 0 24px;max-width:65ch}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:20px}
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.rule{display:flex;gap:14px}
+.rule .n{font:800 26px var(--display);color:var(--red);min-width:36px}
+.rule p{margin:4px 0 0;color:var(--muted)}
+.prime{background:var(--red);color:#fff;border-radius:10px;padding:22px;display:flex;gap:20px;align-items:center;flex-wrap:wrap}
+.prime .amt{font:800 40px var(--display);letter-spacing:-1px}
+.prime p{margin:0;max-width:52ch}
+.btn{display:inline-flex;align-items:center;gap:6px;border:0;border-radius:6px;padding:10px 16px;font:600 14px var(--body);cursor:pointer;background:var(--red);color:#fff}
+.btn:hover{background:var(--red-ink)}
+.btn.sec{background:var(--card);color:var(--ink);border:1px solid var(--line)}
+.btn.ghost{background:none;color:var(--muted);padding:8px 10px}
+.btn.ok{background:var(--ok);color:#fff}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,nav button:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+form .row{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+label{display:block;font-weight:600;font-size:13px;margin-bottom:4px}
+label .opt{font-weight:400;color:var(--muted)}
+input,select,textarea{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--ink);font:14px var(--body)}
+textarea{min-height:90px;resize:vertical}
+fieldset{border:0;padding:0;margin:0 0 22px}
+legend{font:700 13px var(--display);text-transform:uppercase;letter-spacing:.08em;color:var(--red);margin-bottom:12px}
+.hint{font-size:12px;color:var(--muted);margin-top:4px}
+.drop{border:2px dashed var(--line);border-radius:8px;padding:16px;text-align:center;color:var(--muted);font-size:13px}
+.files{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chip{background:var(--grey-soft);border-radius:14px;padding:3px 10px;font-size:12px}
+.check{display:flex;gap:10px;align-items:flex-start;background:var(--red-soft);padding:12px;border-radius:8px}
+.check input{width:auto;margin-top:3px}
+.alert{border-radius:8px;padding:12px 14px;font-size:14px;display:flex;gap:10px;align-items:flex-start}
+.alert.warn{background:var(--warn-soft);color:var(--warn)}
+.alert.info{background:var(--info-soft);color:var(--info)}
+.alert.red{background:var(--red-soft);color:var(--red-ink)}
+.alert b{color:inherit}
+.pill{display:inline-block;border-radius:12px;padding:2px 10px;font-size:12px;font-weight:600;white-space:nowrap}
+.s-soumise{background:var(--grey-soft);color:var(--muted)}
+.s-prise{background:var(--info-soft);color:var(--info)}
+.s-contact{background:var(--warn-soft);color:var(--warn)}
+.s-validee{background:var(--ok-soft);color:var(--ok)}
+.s-rejetee,.s-annulee{background:var(--red-soft);color:var(--red-ink)}
+.tbl{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);padding:8px 10px;border-bottom:1px solid var(--line)}
+td{padding:11px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+tr.click{cursor:pointer}
+tr.click:hover td{background:var(--bg)}
+td .sub{color:var(--muted);font-size:12px}
+.kpi{display:flex;flex-direction:column;gap:2px}
+.kbtn{text-align:left;font:inherit;color:inherit;cursor:pointer}.kbtn:hover{border-color:var(--red)}.kbtn:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+.lf{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}.lf input{flex:2 1 240px}.lf select{flex:1 1 160px;width:auto}
+th.sortable{cursor:pointer;user-select:none;white-space:nowrap}th.sortable:hover{color:var(--red)}.arr{opacity:.6;font-size:10px}
+.kpi .v{font:800 34px var(--display);font-variant-numeric:tabular-nums}
+.kpi .l{color:var(--muted);font-size:13px}
+.kpi.hot .v{color:var(--red)}
+.steps{display:flex;gap:0;margin:6px 0 22px;overflow-x:auto}
+.step{flex:1;min-width:110px;text-align:center;position:relative;font-size:12px;color:var(--muted);padding-top:30px}
+.step::before{content:"";position:absolute;top:10px;left:0;right:0;height:3px;background:var(--line)}
+.step:first-child::before{left:50%}.step:last-child::before{right:50%}
+.step .dot{position:absolute;top:3px;left:50%;transform:translateX(-50%);width:17px;height:17px;border-radius:50%;background:var(--card);border:3px solid var(--line);z-index:1}
+.step.done .dot{background:var(--red);border-color:var(--red)}
+.step.done::before{background:var(--red)}
+.step.cur{color:var(--ink);font-weight:600}
+.step.cur .dot{border-color:var(--red);background:var(--card);box-shadow:0 0 0 4px var(--red-soft)}
+.step.bad .dot{background:var(--muted);border-color:var(--muted)}
+dl{display:grid;grid-template-columns:140px 1fr;gap:8px 14px;margin:0;font-size:14px}
+dt{color:var(--muted)}dd{margin:0;min-width:0;overflow-wrap:anywhere}
+.side{display:flex;flex-direction:column;gap:14px}
+.det{display:grid;gap:16px;grid-template-columns:minmax(0,2fr) minmax(0,1fr)}
+@media (max-width:760px){.det{grid-template-columns:1fr}dl{grid-template-columns:1fr}dt{margin-top:6px}}
+.log{font-size:13px;display:flex;flex-direction:column;gap:8px}
+.log div{border-left:2px solid var(--line);padding-left:10px}
+.log span{color:var(--muted);font-size:12px;display:block}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between;margin-bottom:16px}
+.filters{display:flex;gap:6px;flex-wrap:wrap}
+.filters button{border:1px solid var(--line);background:var(--card);color:var(--muted);border-radius:16px;padding:4px 12px;font:500 13px var(--body);cursor:pointer}
+.filters button.on{border-color:var(--red);color:var(--red)}
+.toast{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:12px 16px;border-radius:8px;max-width:360px;font-size:13px;z-index:50;box-shadow:0 6px 24px rgba(0,0,0,.2)}
+.toast b{display:block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;opacity:.7;margin-bottom:2px}
+.modal{position:fixed;inset:0;background:rgba(10,12,18,.5);display:grid;place-items:center;z-index:40;padding:16px}
+.modal .card{max-width:520px;width:100%;max-height:85vh;overflow:auto}
+pre{background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:10px;font-size:12px;overflow:auto;white-space:pre-wrap}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+.empty{color:var(--muted);text-align:center;padding:30px}
+.note{font-size:12px;color:var(--muted);font-style:italic}
+@media (prefers-reduced-motion:no-preference){.toast{animation:up .25s ease-out}@keyframes up{from{transform:translateY(10px);opacity:0}}}
+</style>
+</head>
+<body>
+<div id="gate" role="dialog" aria-label="Accès réservé"><div class="card">
+<div class="logo"><b>Red</b>Apporteur<small>Accès réservé</small></div>
+<p>Connectez-vous avec vos identifiants d'administration pour accéder à la maquette.</p>
+<a class="btn" href="../backoffice/#redapporteur">Se connecter</a></div></div>
+<style>#gate{position:fixed;inset:0;z-index:100;background:var(--bg);display:grid;place-items:center;padding:16px}#gate .card{width:100%;max-width:380px}#gate a{text-decoration:none}</style>
+<script>(function(){let ok=false;try{ok=sessionStorage.getItem('sb-ok')==='1'}catch(_){}if(ok)document.getElementById('gate').remove()})();</script>
+
+
+<div class="mock"><div class="wrap"><strong>Maquette</strong><span>Voir en tant que :</span><span id="roles"></span><span style="opacity:.7">Connexion simulée (SSO Azure à terme)</span></div></div>
+<header class="top"><div class="wrap">
+  <div class="logo"><b>Red</b>Apporteur<small>Programme de recommandation Redsen</small></div>
+  <nav class="main" id="nav"></nav>
+  <div class="user" id="user"></div>
+</div></header>
+<main><div class="wrap" id="view"></div></main>
+<div id="toast" class="toast" hidden></div>
+<div id="modal" class="modal" hidden></div>
+
+<script>
+const ME = {
+  apporteur:{id:"jm",name:"Julie Martin",role:"Consultante"},
+  responsable:{id:"md",name:"Marc Dubois",role:"Responsable d'affaires"},
+  admin:{id:"ad",name:"Admin RedApporteur",role:"Administrateur"}
+};
+const RESP = [
+  {id:"md",name:"Marc Dubois",secteurs:["Industrie","Horlogerie & luxe"]},
+  {id:"sl",name:"Sophie Lambert",secteurs:["Santé","Secteur public"]},
+  {id:"tr",name:"Thomas Roux",secteurs:["Banque & finance","Assurance"]},
+  {id:"cg",name:"Claire Girard",secteurs:["Commerce & distribution","Services"]}
+];
+const SECTEURS = ["Banque & finance","Assurance","Industrie","Horlogerie & luxe","Santé","Secteur public","Commerce & distribution","Services","Autre"];
+const STEPS = [["soumise","Soumise"],["prise","Prise de connaissance"],["contact","Contact en cours"],["fin","Validée / rejetée"]];
+const LABEL = {soumise:"Soumise",prise:"Prise de connaissance",contact:"Contact en cours",validee:"Validée",rejetee:"Rejetée",annulee:"Annulée"};
+const PEOPLE = {jm:"Julie Martin",lb:"Luc Bernard",nf:"Nora Fontaine"};
+
+let D = [
+  {id:"R-0147",date:"2026-11-09",by:"jm",prenom:"Pierre",nom:"Keller",tel:"+41 22 555 12 34",email:"p.keller@atelier-keller.ch",societe:"Atelier Keller SA",secteur:"Horlogerie & luxe",
+   brief:"Suivi des commandes et du stock de composants entièrement sur Excel, plusieurs fichiers partagés.",contexte:"Rencontré à un apéro réseau à Genève. Je lui ai parlé de nos applications sur mesure livrées vite, sans entrer dans les prix.",
+   pj:["echange-mail-keller.pdf"],status:"soumise",resp:null,log:[["2026-11-09","Soumise par Julie Martin"]]},
+  {id:"R-0146",date:"2026-11-07",by:"lb",prenom:"Anne",nom:"Rochat",tel:"+41 21 555 80 10",email:"anne.rochat@clinique-lac.ch",societe:"Clinique du Lac",secteur:"Santé",
+   brief:"Planning des salles et du personnel, outil actuel trop rigide.",contexte:"Ancienne collègue, elle m'a appelé. Elle connaît Redsen de nom.",pj:[],status:"soumise",resp:null,log:[["2026-11-07","Soumise par Luc Bernard"]]},
+  {id:"R-0144",date:"2026-11-04",by:"jm",prenom:"Marco",nom:"Bianchi",tel:"+41 26 555 44 21",email:"m.bianchi@fribat.ch",societe:"Fribat Construction",secteur:"Industrie",
+   brief:"",contexte:"Client de ma mission actuelle, il a vu une démo de notre outil interne et a demandé si on pouvait faire pareil chez eux.",pj:["capture-excel.png","notes-reunion.docx"],
+   status:"prise",resp:"md",log:[["2026-11-04","Soumise par Julie Martin"],["2026-11-05","Prise en charge par Marc Dubois"]]},
+  {id:"R-0139",date:"2026-10-28",by:"nf",prenom:"Hélène",nom:"Moret",tel:"+41 22 555 66 01",email:"h.moret@vaudoise-courtage.ch",societe:"Moret Courtage",secteur:"Assurance",
+   brief:"Remplacer un CRM surdimensionné par un outil simple.",contexte:"Rencontrée via LinkedIn.",pj:[],status:"contact",resp:"tr",crm:"OPP-2026-0412",
+   log:[["2026-10-28","Soumise par Nora Fontaine"],["2026-10-29","Prise en charge par Thomas Roux"],["2026-10-30","Lead créé dans le CRM (OPP-2026-0412)"]]},
+  {id:"R-0131",date:"2026-10-12",by:"jm",prenom:"David",nom:"Favre",tel:"+41 21 555 90 90",email:"d.favre@favre-logistique.ch",societe:"Favre Logistique",secteur:"Services",
+   brief:"Suivi des tournées.",contexte:"Voisin de bureau d'un ami.",pj:[],status:"validee",resp:"cg",crm:"OPP-2026-0388",prime:"À générer dans Fitnet",
+   log:[["2026-10-12","Soumise par Julie Martin"],["2026-10-13","Prise en charge par Claire Girard"],["2026-10-15","Lead créé dans le CRM (OPP-2026-0388)"],["2026-11-02","Validée : contrat signé"]]},
+  {id:"R-0128",date:"2026-10-05",by:"jm",prenom:"Sarah",nom:"Meier",tel:"+41 22 555 30 30",email:"s.meier@meier-events.ch",societe:"Meier Events",secteur:"Services",
+   brief:"Billetterie interne.",contexte:"Contact personnel.",pj:[],status:"annulee",resp:null,annul:{msg:"Le projet a été repoussé à 2028, inutile de les relancer pour l'instant.",refus:false},
+   log:[["2026-10-05","Soumise par Julie Martin"],["2026-10-06","Annulée par Julie Martin"]]}
+];
+
+let role="apporteur", page="regles", sel=null, filt="todo", draft=null;
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const today="2026-11-10";
+const fmt=d=>{const[y,m,j]=d.split("-");return `${j}.${m}.${y}`};
+const rname=id=>RESP.find(r=>r.id===id)?.name||"Non affectée";
+const pill=s=>`<span class="pill s-${s}">${LABEL[s]}</span>`;
+const editable=r=>["soumise","prise"].includes(r.status);
+function toast(title,msg){const t=$("#toast");t.innerHTML=`<b>${esc(title)}</b>${msg}`;t.hidden=false;clearTimeout(t._t);t._t=setTimeout(()=>t.hidden=true,5200)}
+function mail(to,subj){toast("Email envoyé · RedApporteur@redsen.ch",`À ${esc(to)} : « ${esc(subj)} »`)}
+function go(p,id){page=p;sel=id??null;render();window.scrollTo(0,0)}
+function setRole(r){role=r;page=r==="apporteur"?"regles":r==="responsable"?"dash":"all";sel=null;render()}
+
+function render(){
+  $("#roles").innerHTML=Object.keys(ME).map(k=>`<button class="${k===role?"on":""}" onclick="setRole('${k}')">${ME[k].role}</button>`).join(" ");
+  const u=ME[role];$("#user").innerHTML=`<div class="av">${u.name.split(" ").map(x=>x[0]).join("").slice(0,2)}</div><div>${esc(u.name)}<br><span style="font-size:11px">${u.role}</span></div>`;
+  const navs={apporteur:[["regles","Le programme"],["new","Recommander"],["mine","Mes recommandations"]],
+    responsable:[["dash","Tableau de bord"],["all","Toutes les demandes"],["regles","Le programme"]],
+    admin:[["all","Toutes les demandes"],["dash","Tableau de bord"],["rgpd","RGPD"],["regles","Le programme"]]}[role];
+  $("#nav").innerHTML=navs.map(([k,l])=>`<button class="${page===k||(page==="detail"&&k===(role==="apporteur"?"mine":"all"))?"on":""}" onclick="go('${k}')">${l}</button>`).join("");
+  const v=$("#view");
+  ({regles:vRegles,new:vNew,mine:vMine,detail:vDetail,dash:vDash,all:vAll,rgpd:vRgpd})[page](v);
+}
+
+function vRegles(v){v.innerHTML=`
+  <h1>Vous connaissez quelqu'un qui a un projet ?</h1>
+  <p class="lead">Chaque consultant Redsen croise des besoins chez ses clients, dans son réseau ou autour d'un café. RedApporteur vous permet de transmettre ces contacts au bon responsable d'affaires, de suivre où en est la discussion, et d'être récompensé quand ça aboutit.</p>
+  <div class="prime"><div class="amt">CHF 500</div><p>versés pour chaque recommandation qui débouche sur un projet signé, quelle que soit l'offre Redsen concernée.</p></div>
+  <h2 style="margin-top:28px">Les règles</h2>
+  <div class="grid g2">
+    <div class="card rule"><div class="n">1</div><div><strong>Demandez l'accord du contact</strong><p>Avant de transmettre un nom, la personne doit avoir accepté d'être recontactée par Redsen. Vous le confirmez à chaque envoi.</p></div></div>
+    <div class="card rule"><div class="n">2</div><div><strong>Donnez le contexte</strong><p>Comment vous l'avez rencontré et ce que vous lui avez déjà dit de Redsen. Le besoin peut rester vague si vous n'en savez pas plus.</p></div></div>
+    <div class="card rule"><div class="n">3</div><div><strong>Suivez l'avancement</strong><p>Vous voyez qui gère votre recommandation et à quelle étape elle en est. Vous pouvez la modifier jusqu'au premier contact du responsable.</p></div></div>
+    <div class="card rule"><div class="n">4</div><div><strong>Prime à la signature</strong><p>Quand l'affaire est signée, vous recevez un email de félicitations et la prime vous est versée.</p></div></div>
+  </div>
+  <h2 style="margin-top:28px">Bon à savoir</h2>
+  <div class="grid g2">
+    <div class="alert info"><div><b>Contact déjà connu.</b> Vous pouvez recommander une société ou une personne déjà présente. La prime est alors laissée à l'appréciation du responsable d'affaires, qui vérifie qu'il s'agit bien d'un nouveau projet.</div></div>
+    <div class="alert info"><div><b>Annulation.</b> Vous ne pouvez pas supprimer une recommandation, mais vous pouvez l'annuler avec un message. Indiquez notamment si le contact refuse d'être démarché.</div></div>
+  </div>
+  <div class="actions">${role==="apporteur"?`<button class="btn" onclick="go('new')">Recommander un contact</button>`:""}</div>`}
+
+function blank(){return {prenom:"",nom:"",tel:"",email:"",societe:"",secteur:"",brief:"",contexte:"",pj:[],accord:false}}
+function vNew(v,edit){
+  const r=edit||draft||(draft=blank());
+  v.innerHTML=`<h1>${edit?"Modifier la recommandation "+edit.id:"Recommander un contact"}</h1>
+  <p class="lead">${edit?"Modifiable tant que le responsable n'a pas pris contact.":"Les champs marqués d'un astérisque sont obligatoires. Le reste aide le responsable d'affaires à reprendre la discussion là où vous l'avez laissée."}</p>
+  <form class="card" id="f" novalidate>
+   <fieldset><legend>Le contact</legend>
+    <div class="row">
+     <div><label for="prenom">Prénom *</label><input id="prenom" value="${esc(r.prenom)}" required></div>
+     <div><label for="nom">Nom *</label><input id="nom" value="${esc(r.nom)}" required></div>
+     <div><label for="societe">Société *</label><input id="societe" value="${esc(r.societe)}" required></div>
+    </div>
+    <div class="row" style="margin-top:14px">
+     <div><label for="email">Email *</label><input id="email" type="email" value="${esc(r.email)}" required></div>
+     <div><label for="tel">Téléphone *</label><input id="tel" type="tel" value="${esc(r.tel)}" required></div>
+     <div><label for="secteur">Secteur <span class="opt">(facultatif)</span></label><select id="secteur"><option value="">Je ne sais pas</option>${SECTEURS.map(s=>`<option ${s===r.secteur?"selected":""}>${s}</option>`).join("")}</select><div class="hint">Aide à choisir le bon responsable.</div></div>
+    </div>
+    <div id="dup" style="margin-top:14px"></div>
+   </fieldset>
+   <fieldset><legend>Le besoin</legend>
+    <label for="brief">Brief du besoin <span class="opt">(facultatif)</span></label>
+    <textarea id="brief" placeholder="Ce que vous en savez, même en une phrase. Ex. : tout leur suivi de commandes est sur Excel.">${esc(r.brief)}</textarea>
+    <label for="contexte" style="margin-top:14px">Contexte de la recommandation *</label>
+    <textarea id="contexte" required placeholder="Comment avez-vous eu ce contact ? Qu'avez-vous déjà dit de Redsen, de nos offres ou de nos prix ?">${esc(r.contexte)}</textarea>
+    <div class="hint">Le responsable d'affaires s'en sert pour savoir où en est la discussion.</div>
+   </fieldset>
+   <fieldset><legend>Pièces jointes</legend>
+    <div class="drop"><label for="pjin" style="font-weight:500;cursor:pointer;margin:0">Glissez ou <u>choisissez des fichiers</u> : échanges d'emails, captures, photos…</label><input id="pjin" type="file" multiple hidden></div>
+    <div class="files" id="pjlist">${r.pj.map(p=>`<span class="chip">${esc(p)}</span>`).join("")}</div>
+   </fieldset>
+   ${edit?"":`<label class="check" for="accord"><input type="checkbox" id="accord" ${r.accord?"checked":""}><span>J'ai reçu l'accord de la personne pour transmettre son nom et ses coordonnées à Redsen, et pour être recontactée. *</span></label>`}
+   <div id="err" style="margin-top:14px"></div>
+   <div class="actions"><button class="btn" type="submit">${edit?"Enregistrer":"Envoyer la recommandation"}</button>${edit?`<button class="btn sec" type="button" onclick="go('detail','${edit.id}')">Annuler les modifications</button>`:`<button class="btn sec" type="button" onclick="fillDemo()">Remplir avec un exemple</button>`}</div>
+  </form>`;
+  const f=$("#f");
+  const sync=()=>{["prenom","nom","societe","email","tel","secteur","brief","contexte"].forEach(k=>r[k]=$("#"+k).value);if(!edit)r.accord=$("#accord").checked;dupCheck(r,edit)};
+  f.addEventListener("input",sync);
+  $("#pjin").addEventListener("change",e=>{[...e.target.files].forEach(x=>r.pj.push(x.name));$("#pjlist").innerHTML=r.pj.map(p=>`<span class="chip">${esc(p)}</span>`).join("")});
+  f.addEventListener("submit",e=>{e.preventDefault();sync();submit(r,edit)});
+  dupCheck(r,edit);
+}
+function fillDemo(){Object.assign(draft,{prenom:"Laura",nom:"Pittet",societe:"Fribat Construction",email:"l.pittet@fribat.ch",tel:"+41 26 555 44 30",secteur:"Industrie",brief:"Gestion des chantiers et des heures sur Excel.",contexte:"Rencontrée lors d'un atelier chez un client. Je lui ai seulement dit que Redsen développe des outils sur mesure."});render()}
+function findDup(r,edit){
+  const soc=r.societe.trim().toLowerCase(),em=r.email.trim().toLowerCase();
+  if(!soc&&!em)return null;
+  return D.find(x=>x!==edit&&((soc&&x.societe.toLowerCase()===soc)||(em&&x.email.toLowerCase()===em)));
+}
+function dupCheck(r,edit){
+  const d=findDup(r,edit),el=$("#dup");if(!el)return;
+  el.innerHTML=d?`<div class="alert warn"><div><b>${esc(d.societe)} est déjà connue de RedApporteur</b> (recommandation ${d.id}, ${LABEL[d.status].toLowerCase()}${d.resp?", suivie par "+rname(d.resp):""}). Vous pouvez quand même l'envoyer : elle sera rattachée à la fiche existante${d.resp?" et confiée au même responsable":""}. La prime sera laissée à l'appréciation du responsable, qui vérifiera qu'il s'agit bien d'un nouveau projet.</div></div>`:"";
+}
+function submit(r,edit){
+  const miss=[];[["prenom","Prénom"],["nom","Nom"],["societe","Société"],["email","Email"],["tel","Téléphone"],["contexte","Contexte"]].forEach(([k,l])=>{if(!r[k].trim())miss.push(l)});
+  if(r.email&&!/^\S+@\S+\.\S+$/.test(r.email))miss.push("Email valide");
+  if(!edit&&!r.accord)miss.push("Accord du contact");
+  if(miss.length){$("#err").innerHTML=`<div class="alert red"><div><b>Il manque : ${miss.join(", ")}.</b></div></div>`;return}
+  if(edit){edit.log.push([today,"Modifiée par "+PEOPLE[edit.by]]);toast("Enregistré","La recommandation "+edit.id+" a été mise à jour.");go("detail",edit.id);return}
+  const dup=findDup(r);
+  const id="R-0"+(148+D.filter(x=>+x.id.slice(2)>147).length);
+  const rec={...r,id,date:today,by:"jm",status:"soumise",resp:dup?.resp||null,dupOf:dup?.id||null,log:[[today,"Soumise par Julie Martin"]]};
+  if(dup){rec.log.push([today,`Rattachée à ${dup.id} (contact déjà connu)`]);if(dup.resp){rec.status="prise";rec.log.push([today,"Affectée automatiquement à "+rname(dup.resp)])}}
+  delete rec.accord;D.unshift(rec);draft=null;
+  mail("Julie Martin","Merci pour votre recommandation "+id);go("detail",id);
+}
+
+let LS={k:null,d:1,q:"",s:"",r:"",st:""},LL=null;
+function list(rows,cols){LL=[rows,cols];const has=k=>cols.includes(C[k]);
+  return `<div class="lf"><input id="lq" type="search" placeholder="Rechercher une société, un nom, une référence…" value="${esc(LS.q)}" oninput="LS.q=this.value;relist()" aria-label="Rechercher">
+  <select id="ls" onchange="LS.s=this.value;relist()" aria-label="Secteur"><option value="">Tous les secteurs</option>${SECTEURS.map(s=>`<option ${s===LS.s?"selected":""}>${s}</option>`).join("")}</select>
+  <select id="lr" onchange="LS.r=this.value;relist()" aria-label="Responsable"><option value="">Tous les responsables</option><option value="-" ${LS.r==="-"?"selected":""}>Non affectées</option>${RESP.map(p=>`<option value="${p.id}" ${p.id===LS.r?"selected":""}>${p.name}</option>`).join("")}</select>
+  <select id="lst2" onchange="LS.st=this.value;relist()" aria-label="Statut"><option value="">Tous les statuts</option>${Object.entries(LABEL).map(([k,l])=>`<option value="${k}" ${k===LS.st?"selected":""}>${l}</option>`).join("")}</select></div><div id="lst">${table(rows,cols)}</div>`}
+function relist(){$("#lst").innerHTML=table(...LL)}
+function sortBy(i){const k=LL[1][i][2];if(!k)return;if(LS.k===i)LS.d=-LS.d;else{LS.k=i;LS.d=1}relist()}
+function table(rows,cols){
+  const q=LS.q.trim().toLowerCase();
+  rows=rows.filter(r=>(!q||[r.id,r.societe,r.nom,r.prenom,r.email,PEOPLE[r.by]].join(" ").toLowerCase().includes(q))&&(!LS.s||r.secteur===LS.s)&&(!LS.r||(LS.r==="-"?!r.resp:r.resp===LS.r))&&(!LS.st||r.status===LS.st));
+  if(LS.k!=null&&cols[LS.k]){const f=cols[LS.k][2];rows=rows.slice().sort((a,b)=>String(f(a)).localeCompare(String(f(b)),"fr")*LS.d)}
+  return rows.length?`<div class="card tbl" style="padding:6px 10px"><table><thead><tr>${cols.map((c,i)=>`<th class="sortable" onclick="sortBy(${i})" aria-sort="${LS.k===i?(LS.d>0?"ascending":"descending"):"none"}">${c[0]} <span class="arr">${LS.k===i?(LS.d>0?"▲":"▼"):"↕"}</span></th>`).join("")}</tr></thead><tbody>${rows.map(r=>`<tr class="click" onclick="go('detail','${r.id}')">${cols.map(c=>`<td>${c[1](r)}</td>`).join("")}</tr>`).join("")}</tbody></table></div><p class="note" style="margin-top:8px">${rows.length} résultat(s)</p>`:`<div class="card empty">Aucune demande ne correspond à ces critères.</div>`}
+const C={
+  id:["Réf. / date",r=>`<strong>${r.id}</strong><div class="sub">${fmt(r.date)}</div>`,r=>r.date+r.id],
+  soc:["Société",r=>`${esc(r.societe)}${r.dupOf?' <span class="pill s-soumise">déjà connue</span>':""}<div class="sub">${esc(r.prenom)} ${esc(r.nom)}</div>`,r=>r.societe],
+  sect:["Secteur",r=>esc(r.secteur||"–"),r=>r.secteur||"~"],
+  by:["Apporteur",r=>PEOPLE[r.by],r=>PEOPLE[r.by]],
+  resp:["Responsable",r=>r.resp?rname(r.resp):'<span class="sub">Non affectée</span>',r=>r.resp?rname(r.resp):"~"],
+  st:["Statut",r=>pill(r.status),r=>({soumise:1,prise:2,contact:3,validee:4,rejetee:5,annulee:6})[r.status]]
+};
+function vMine(v){const rows=D.filter(r=>r.by==="jm");
+  v.innerHTML=`<div class="toolbar"><div><h1>Mes recommandations</h1><p class="lead" style="margin:0">${rows.length} recommandations · ${rows.filter(r=>r.status==="validee").length} validée(s)</p></div><button class="btn" onclick="go('new')">Recommander un contact</button></div>${list(rows,[C.id,C.soc,C.resp,C.st])}`}
+
+function vDash(v){
+  const mine=role==="responsable"?"md":null;
+  const unass=D.filter(r=>!r.resp&&r.status==="soumise");
+  const todo=D.filter(r=>r.resp===(mine||r.resp)&&r.resp&&r.status==="prise");
+  const enc=D.filter(r=>(mine?r.resp===mine:true)&&r.status==="contact");
+  const pend=D.filter(r=>["soumise","prise"].includes(r.status)&&(!r.resp||!mine||r.resp===mine)).sort((a,b)=>b.date.localeCompare(a.date));
+  v.innerHTML=`<h1>Tableau de bord</h1><p class="lead">${mine?"Ce qui vous attend, du plus récent au plus ancien.":"Vue d'ensemble de toutes les recommandations."}</p>
+  <div class="grid g3">
+    <button class="card kpi hot kbtn" onclick="filt='unass';go('all')"><span class="v">${unass.length}</span><span class="l">Demandes non affectées →</span></button>
+    <button class="card kpi kbtn" onclick="filt='mine';go('all')"><span class="v">${todo.length}</span><span class="l">${mine?"Affectées à moi, non traitées":"Affectées, non traitées"} →</span></button>
+    <button class="card kpi kbtn" onclick="filt='enc';go('all')"><span class="v">${enc.length}</span><span class="l">Contacts en cours →</span></button>
+  </div>
+  <h2 style="margin-top:28px">À traiter</h2>${list(pend,[C.id,C.soc,C.sect,C.resp,C.st])}`}
+
+function vAll(v){
+  const me=role==="responsable"?"md":null;
+  const F={todo:["À traiter",r=>["soumise","prise"].includes(r.status)],unass:["Non affectées",r=>!r.resp&&r.status==="soumise"],mine:[me?"À moi, non traitées":"Affectées, non traitées",r=>r.resp&&(!me||r.resp===me)&&r.status==="prise"],enc:["Contacts en cours",r=>r.status==="contact"&&(!me||r.resp===me)],fin:["Clôturées",r=>["validee","rejetee","annulee"].includes(r.status)],all:["Toutes",()=>true]};
+  const rows=D.filter(F[filt][1]).sort((a,b)=>b.date.localeCompare(a.date));
+  v.innerHTML=`<div class="toolbar"><h1>Toutes les demandes</h1><div class="filters">${Object.entries(F).map(([k,[l]])=>`<button class="${k===filt?"on":""}" onclick="filt='${k}';render()">${l}</button>`).join("")}</div></div>${list(rows,[C.id,C.soc,C.by,C.resp,C.st])}`}
+
+function stepper(r){
+  const idx={soumise:0,prise:1,contact:2,validee:3,rejetee:3,annulee:-1}[r.status];
+  if(r.status==="annulee")return `<div class="alert red" style="margin:6px 0 22px"><div><b>Recommandation annulée par l'apporteur.</b> ${esc(r.annul.msg)}${r.annul.refus?"<br><b>Le contact refuse tout démarchage.</b>":""}</div></div>`;
+  return `<div class="steps">${STEPS.map(([k,l],i)=>{const last=i===3,lab=last&&idx===3?LABEL[r.status]:l;return `<div class="step ${i<idx||(i===idx&&last)?"done":""} ${i===idx?"cur":""} ${last&&r.status==="rejetee"?"bad":""}"><span class="dot"></span>${lab}</div>`}).join("")}</div>`;
+}
+function vDetail(v){
+  const r=D.find(x=>x.id===sel);if(!r)return go("all");
+  if(page==="detail"&&r._edit){delete r._edit;return vNew(v,r)}
+  const isOwner=role==="apporteur";
+  const canAssign=role!=="apporteur"&&!r.resp&&["soumise"].includes(r.status);
+  const isMine=role==="responsable"&&r.resp==="md";
+  const can=isMine||role==="admin";
+  let act="";
+  if(isOwner&&editable(r))act=`<button class="btn sec" onclick="D.find(x=>x.id==='${r.id}')._edit=1;render()">Modifier</button><button class="btn ghost" onclick="cancelModal('${r.id}')">Annuler la recommandation</button>`;
+  if(isOwner&&!editable(r)&&r.status==="contact")act=`<p class="note">Le responsable a pris contact : la recommandation n'est plus modifiable.</p>`;
+  if(canAssign)act+=`<button class="btn" onclick="assign('${r.id}','md')">${role==="admin"?"M'affecter":"Me l'affecter"}</button>`;
+  if(role==="responsable"&&r.resp&&r.resp!=="md"&&["soumise","prise","contact"].includes(r.status))act+=`<p class="note">Suivie par ${rname(r.resp)}. Pour changer de responsable, adressez-vous à un administrateur.</p>`;
+  if(can&&r.status==="prise")act+=`<button class="btn" onclick="crm('${r.id}')">Créer le lead dans le CRM</button>`;
+  if(can&&r.status==="contact")act+=`<button class="btn ok" onclick="close_('${r.id}','validee')">Simuler : validée dans le CRM</button><button class="btn sec" onclick="close_('${r.id}','rejetee')">Simuler : rejetée</button>`;
+  if(role==="admin"&&!["validee","rejetee","annulee"].includes(r.status))act+=`<label for="reass" class="sr" style="margin:8px 0 0;width:100%">Réaffecter à</label><select id="reass" style="max-width:240px" onchange="assign('${r.id}',this.value,true)"><option value="">Choisir un responsable</option>${RESP.map(p=>`<option value="${p.id}" ${p.id===r.resp?"selected":""}>${p.name}</option>`).join("")}</select>`;
+  const sugg=!r.resp&&r.secteur?RESP.find(p=>p.secteurs.includes(r.secteur)):null;
+  const dup=r.dupOf?D.find(x=>x.id===r.dupOf):D.find(x=>x.dupOf===r.id);
+  v.innerHTML=`<button class="btn ghost" onclick="go('${isOwner?"mine":role==="responsable"?"dash":"all"}')">← Retour</button>
+  <div class="toolbar" style="margin-top:6px"><div><h1>${esc(r.societe)}</h1><p class="lead" style="margin:0">${r.id} · recommandée par ${PEOPLE[r.by]} le ${fmt(r.date)}</p></div>${pill(r.status)}</div>
+  ${stepper(r)}
+  ${dup?`<div class="alert warn" style="margin-bottom:16px"><div><b>Contact déjà connu.</b> Liée à ${dup.id} (${LABEL[dup.status].toLowerCase()}). ${role!=="apporteur"?"Vérifiez qu'il s'agit bien d'un nouveau projet avant d'accorder la prime.":"La prime sera laissée à l'appréciation du responsable."}</div></div>`:""}
+  <div class="det">
+   <div class="grid">
+    <div class="card"><h2>Contact</h2><dl>
+     <dt>Nom</dt><dd>${esc(r.prenom)} ${esc(r.nom)}</dd><dt>Société</dt><dd>${esc(r.societe)}</dd>
+     <dt>Email</dt><dd>${esc(r.email)}</dd><dt>Téléphone</dt><dd>${esc(r.tel)}</dd><dt>Secteur</dt><dd>${esc(r.secteur||"Non précisé")}</dd></dl></div>
+    <div class="card"><h2>Besoin et contexte</h2><dl>
+     <dt>Brief</dt><dd>${esc(r.brief)||'<span class="note">Pas de détail fourni</span>'}</dd>
+     <dt>Contexte</dt><dd>${esc(r.contexte)}</dd>
+     <dt>Pièces jointes</dt><dd>${r.pj.length?`<div class="files" style="margin:0">${r.pj.map(p=>`<span class="chip">${esc(p)}</span>`).join("")}</div>`:'<span class="note">Aucune</span>'}</dd></dl></div>
+   </div>
+   <div class="side">
+    <div class="card"><h2>Suivi</h2><dl>
+     <dt>Responsable</dt><dd>${r.resp?rname(r.resp):"Non affectée"}${sugg&&role!=="apporteur"?`<div class="hint">Suggestion selon le secteur : ${sugg.name}</div>`:""}</dd>
+     ${r.crm&&role!=="apporteur"?`<dt>Lead CRM</dt><dd>${r.crm}</dd>`:""}
+     ${r.status==="validee"?`<dt>Prime</dt><dd>CHF 500 · ${role==="apporteur"?"en cours de versement":(r.prime||"À générer dans Fitnet")}</dd>`:""}</dl>
+     <div class="actions">${act||'<span class="note">Aucune action disponible.</span>'}</div></div>
+    <div class="card"><h2>Historique</h2><div class="log">${r.log.slice().reverse().map(([d,t])=>`<div>${esc(role==="apporteur"?t.replace(/Lead créé dans le CRM.*/,"Prise de contact engagée par le responsable").replace(" dans le CRM",""):t)}<span>${fmt(d)}</span></div>`).join("")}</div></div>
+   </div>
+  </div>`}
+function assign(id,who,admin){if(!who)return;const r=D.find(x=>x.id===id);r.resp=who;if(r.status==="soumise")r.status="prise";r.log.push([today,(admin?"Réaffectée par l'administrateur à ":"Prise en charge par ")+rname(who)]);mail(PEOPLE[r.by],`Votre recommandation ${id} est suivie par ${rname(who)}`);render()}
+function crm(id){const r=D.find(x=>x.id===id);r.status="contact";r.crm="OPP-2026-0"+(430+Math.floor(Math.random()*60));r.log.push([today,`Lead créé dans le CRM (${r.crm})`]);toast("CRM",`Lead ${r.crm} créé pour ${esc(r.societe)}. La recommandation passe en « Contact en cours ».`);render()}
+function close_(id,s){const r=D.find(x=>x.id===id);r.status=s;r.log.push([today,s==="validee"?"Validée dans le CRM":"Rejetée dans le CRM"]);
+  if(s==="validee"){r.prime="À générer dans Fitnet";mail(PEOPLE[r.by],"Bravo ! Votre recommandation "+id+" a abouti : CHF 500 pour vous")}
+  else mail(PEOPLE[r.by],"Votre recommandation "+id+" n'a pas abouti cette fois");render()}
+function cancelModal(id){
+  const m=$("#modal");m.hidden=false;m.innerHTML=`<div class="card"><h2>Annuler la recommandation ${id}</h2>
+  <p class="lead" style="margin-bottom:14px">Elle ne sera pas supprimée. Votre message aide le responsable à comprendre ce qui se passe.</p>
+  <label for="cmsg">Message *</label><textarea id="cmsg" placeholder="Ex. : le projet est reporté, le contact a changé de poste…"></textarea>
+  <fieldset style="margin:14px 0 0"><legend style="font-size:12px">Le contact accepte-t-il d'être démarché ? *</legend>
+   <label class="check" style="background:var(--grey-soft);margin-bottom:6px" for="ok1"><input type="radio" name="dem" id="ok1" value="0"><span style="font-weight:500">Oui, Redsen peut le recontacter plus tard</span></label>
+   <label class="check" for="ok2"><input type="radio" name="dem" id="ok2" value="1"><span style="font-weight:500">Non, il refuse tout démarchage</span></label></fieldset>
+  <div id="cerr"></div>
+  <div class="actions"><button class="btn" onclick="doCancel('${id}')">Confirmer l'annulation</button><button class="btn sec" onclick="$('#modal').hidden=true">Retour</button></div></div>`}
+function doCancel(id){const msg=$("#cmsg").value.trim(),d=document.querySelector("input[name=dem]:checked");
+  if(!msg||!d){$("#cerr").innerHTML=`<div class="alert red" style="margin-top:12px"><div><b>Indiquez un message et la réponse sur le démarchage.</b></div></div>`;return}
+  const r=D.find(x=>x.id===id);r.status="annulee";r.annul={msg,refus:d.value==="1"};r.log.push([today,"Annulée par "+PEOPLE[r.by]+(r.annul.refus?" · refus de démarchage":"")]);$("#modal").hidden=true;
+  if(r.resp)mail(rname(r.resp),`La recommandation ${id} a été annulée`);render()}
+
+function vRgpd(v){
+  v.innerHTML=`<h1>Données personnelles</h1><p class="lead">Recherchez une personne pour extraire tout ce que RedApporteur détient sur elle, ou supprimer ses données sur demande.</p>
+  <div class="card"><label for="q">Nom, société ou email</label><input id="q" placeholder="Ex. : Keller"><div id="res" style="margin-top:16px"></div></div>`;
+  const run=()=>{const q=$("#q").value.trim().toLowerCase();const rows=q?D.filter(r=>[r.nom,r.prenom,r.societe,r.email].join(" ").toLowerCase().includes(q)):[];
+    $("#res").innerHTML=q?(rows.length?`<div class="tbl"><table><thead><tr><th>Personne</th><th>Recommandations</th><th></th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.prenom)} ${esc(r.nom)}<div class="sub">${esc(r.email)}</div></td><td>${r.id} · ${pill(r.status)}</td><td style="white-space:nowrap"><button class="btn sec" onclick="exportP('${r.id}')">Extraire</button> <button class="btn ghost" onclick="delP('${r.id}')">Supprimer</button></td></tr>`).join("")}</tbody></table></div>`:`<p class="note">Aucune personne trouvée.</p>`):"";};
+  $("#q").addEventListener("input",run)}
+function exportP(id){const r=D.find(x=>x.id===id);const o={reference:r.id,personne:{prenom:r.prenom,nom:r.nom,email:r.email,telephone:r.tel},societe:r.societe,secteur:r.secteur,besoin:r.brief,contexte:r.contexte,statut:LABEL[r.status],refus_demarchage:!!r.annul?.refus,historique:r.log.map(([d,t])=>d+" "+t)};
+  const m=$("#modal");m.hidden=false;m.innerHTML=`<div class="card"><h2>Extraction ${r.id}</h2><pre id="exp">${esc(JSON.stringify(o,null,2))}</pre><div class="actions"><button class="btn" onclick="navigator.clipboard.writeText($('#exp').textContent).then(()=>toast('Copié','Données copiées.'),()=>toast('Copie impossible','Sélectionnez le texte à la main.'))">Copier</button><button class="btn sec" onclick="$('#modal').hidden=true">Fermer</button></div></div>`}
+function delP(id){const m=$("#modal");m.hidden=false;m.innerHTML=`<div class="card"><h2>Supprimer les données de ${id} ?</h2><p class="lead">Les coordonnées et le contexte sont effacés définitivement. La ligne reste, anonymisée, pour le suivi des primes.</p><div class="actions"><button class="btn" onclick="doDel('${id}')">Supprimer définitivement</button><button class="btn sec" onclick="$('#modal').hidden=true">Retour</button></div></div>`}
+function doDel(id){const r=D.find(x=>x.id===id);Object.assign(r,{prenom:"Personne",nom:"anonymisée",email:"–",tel:"–",brief:"",contexte:"Données supprimées sur demande (RGPD)",pj:[]});r.log.push([today,"Données personnelles supprimées par l'administrateur"]);$("#modal").hidden=true;toast("Supprimé","Les données de "+id+" ont été anonymisées.");render()}
+
+document.addEventListener("keydown",e=>{if(e.key==="Escape")$("#modal").hidden=true});
+render();
+</script>
+
+</body>
+</html>

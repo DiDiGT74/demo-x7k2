@@ -779,7 +779,7 @@ go(location.hash.slice(1)||'accueil');
  if(ok){g.remove();return}
  document.getElementById('gs').addEventListener('click',e=>{const p=document.getElementById('gp'),v=p.type==='password';p.type=v?'text':'password';e.target.textContent=v?'Masquer':'Afficher';e.target.setAttribute('aria-pressed',v)});
  document.getElementById('gf').addEventListener('submit',e=>{e.preventDefault();
-  if(document.getElementById('gl').value.trim().toLowerCase()==='liacestbien'&&document.getElementById('gp').value.trim()==='liacestmal'){g.remove();try{sessionStorage.setItem('sb-ok','1')}catch(_){}}
+  if(document.getElementById('gl').value.trim().toLowerCase()==='liacestbien'&&document.getElementById('gp').value.trim()==='liacestmal'){g.remove();try{sessionStorage.setItem('sb-ok','1')}catch(_){}if(location.hash==='#redapporteur')location.href='../redapporteur/';}
   else document.getElementById('ge').hidden=false});})();
 </script>
 
